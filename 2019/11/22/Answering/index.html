@@ -22,8 +22,11 @@
 <meta property="og:image" content="http://yoursite.com/2019/11/22/Answering/images/2.png">
 <meta property="og:image" content="http://yoursite.com/2019/11/22/Answering/images/3.png">
 <meta property="og:image" content="http://yoursite.com/2019/11/22/Answering/images/4.png">
+<meta property="og:image" content="http://yoursite.com/2019/11/22/Answering/images/4.png">
+<meta property="og:image" content="http://yoursite.com/2019/11/22/Answering/images/5.png">
+<meta property="og:image" content="http://yoursite.com/2019/11/22/Answering/images/6.png">
 <meta property="og:image" content="http://yoursite.com/2019/11/22/Answering/images/7.png">
-<meta property="og:updated_time" content="2020-12-03T03:21:16.501Z">
+<meta property="og:updated_time" content="2020-12-06T11:46:01.944Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Stacked Attention Networks for Image Question Answering">
 <meta name="twitter:description" content="论文笔记">
@@ -131,14 +134,11 @@
 <p><img src="/2019/11/22/Answering/images/4.png" alt="image"></p>
 <p>这种做法的牛逼之处在于结合了问题信息和潜在答案的视觉信息，比简单将图像和文本句子信息组合更厉害。</p>
 <p>但是，作者指出，对于复杂问题，一层attention层不足以得到正确的答案，因此作者使用了多层的attention，每层都会尽可能提取细粒度的信息，对于第k层，采用如下的计算方式：</p>
-<center>![image](/images/4.png)</center>
-
+<p> <img src="/2019/11/22/Answering/images/4.png" alt="image"> </p>
 <p>不断将新得到的向量叠加在之前得到的向量上：</p>
-<center>![image](/images/5.png)</center>
-
+<p><img src="/2019/11/22/Answering/images/5.png" alt="image"></p>
 <p>最终，重复K次操作，再接一个softmax得到最终的输出：</p>
-<center>![image](/images/6.png)</center>
-
+<p><img src="/2019/11/22/Answering/images/6.png" alt="image"></p>
 <h5 id="实验部分"><a href="#实验部分" class="headerlink" title="实验部分"></a>实验部分</h5><p>作者对于图像建模使用了VGGNet；对于文本建模部分，由于实验有多个数据集，作者对于不同的数据集采用了不同的参数；对于attention部分，作者使用了两层attention，并且发现当大于等于3层的时候多层attention并没有什么卵用。</p>
 <h6 id="论文中的示例图"><a href="#论文中的示例图" class="headerlink" title="论文中的示例图"></a>论文中的示例图</h6><p><img src="/2019/11/22/Answering/images/7.png" alt="image"></p>
   
@@ -230,11 +230,11 @@
 			
 		
 			
-				<li><a href="/tags/Algorithm/" title="Algorithm">Algorithm<sup>2</sup></a></li>
+				<li><a href="/tags/学习/" title="学习">学习<sup>2</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/学习/" title="学习">学习<sup>2</sup></a></li>
+				<li><a href="/tags/Algorithm/" title="Algorithm">Algorithm<sup>2</sup></a></li>
 			
 		
 			
@@ -246,7 +246,7 @@
 			
 		
 			
-				<li><a href="/tags/随笔/" title="随笔">随笔<sup>1</sup></a></li>
+				<li><a href="/tags/ElasticSearch/" title="ElasticSearch">ElasticSearch<sup>1</sup></a></li>
 			
 		
 			
@@ -254,7 +254,7 @@
 			
 		
 			
-				<li><a href="/tags/MongoDB/" title="MongoDB">MongoDB<sup>1</sup></a></li>
+				<li><a href="/tags/随笔/" title="随笔">随笔<sup>1</sup></a></li>
 			
 		
 			
@@ -262,7 +262,7 @@
 			
 		
 			
-				<li><a href="/tags/ElasticSearch/" title="ElasticSearch">ElasticSearch<sup>1</sup></a></li>
+				<li><a href="/tags/MongoDB/" title="MongoDB">MongoDB<sup>1</sup></a></li>
 			
 		
 			
