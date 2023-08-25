@@ -1,0 +1,955 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  
+    <title>【NL2SQL】论文阅读 | Blog of YQ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Yuanqing Zhu">
+    
+
+    
+    <meta name="description" content="再让我们来看看论文">
+<meta name="keywords" content="NLP,NL2SQL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【NL2SQL】论文阅读">
+<meta property="og:url" content="http://yoursite.com/2023/08/23/NL2SQL论文阅读/index.html">
+<meta property="og:site_name" content="Blog of YQ">
+<meta property="og:description" content="再让我们来看看论文">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2023/08/23/NL2SQL论文阅读/1.png">
+<meta property="og:image" content="http://yoursite.com/2023/08/23/NL2SQL论文阅读/2.png">
+<meta property="og:image" content="http://yoursite.com/2023/08/23/NL2SQL论文阅读/image1.png">
+<meta property="og:image" content="http://yoursite.com/2023/08/23/NL2SQL论文阅读/image2.png">
+<meta property="og:image" content="http://yoursite.com/2023/08/23/NL2SQL论文阅读/ratsql1.png">
+<meta property="og:image" content="http://yoursite.com/2023/08/23/NL2SQL论文阅读/ratsql2.png">
+<meta property="og:image" content="http://yoursite.com/2023/08/23/NL2SQL论文阅读/ratsql3.png">
+<meta property="og:image" content="http://yoursite.com/2023/08/23/NL2SQL论文阅读/ratsql4.png">
+<meta property="og:image" content="http://yoursite.com/2023/08/23/NL2SQL论文阅读/ratsql5.png">
+<meta property="og:image" content="http://yoursite.com/2023/08/23/NL2SQL论文阅读/ratsql6.png">
+<meta property="og:image" content="http://yoursite.com/2023/08/23/NL2SQL论文阅读/ratsql13.png">
+<meta property="og:image" content="http://yoursite.com/2023/08/23/NL2SQL论文阅读/ratsql12.png">
+<meta property="og:image" content="http://yoursite.com/2023/08/23/NL2SQL论文阅读/ratsql7.png">
+<meta property="og:image" content="http://yoursite.com/2023/08/23/NL2SQL论文阅读/ratsql8.png">
+<meta property="og:image" content="http://yoursite.com/2023/08/23/NL2SQL论文阅读/ratsql11.png">
+<meta property="og:image" content="http://yoursite.com/2023/08/23/NL2SQL论文阅读/r1.png">
+<meta property="og:image" content="http://yoursite.com/2023/08/23/NL2SQL论文阅读/r2.png">
+<meta property="og:image" content="http://yoursite.com/2023/08/23/NL2SQL论文阅读/r3.png">
+<meta property="og:image" content="http://yoursite.com/2023/08/23/NL2SQL论文阅读/r4.png">
+<meta property="og:image" content="http://yoursite.com/2023/08/23/NL2SQL论文阅读/r5.png">
+<meta property="og:image" content="http://yoursite.com/2023/08/23/NL2SQL论文阅读/r6.png">
+<meta property="og:image" content="http://yoursite.com/2023/08/23/NL2SQL论文阅读/r7.png">
+<meta property="og:image" content="http://yoursite.com/2023/08/23/NL2SQL论文阅读/r8.png">
+<meta property="og:image" content="http://yoursite.com/2023/08/23/NL2SQL论文阅读/r9.png">
+<meta property="og:image" content="http://yoursite.com/2023/08/23/NL2SQL论文阅读/r10.png">
+<meta property="og:image" content="http://yoursite.com/2023/08/23/NL2SQL论文阅读/r11.png">
+<meta property="og:image" content="http://yoursite.com/2023/08/23/NL2SQL论文阅读/r12.png">
+<meta property="og:image" content="http://yoursite.com/2023/08/23/NL2SQL论文阅读/t1.png">
+<meta property="og:image" content="http://yoursite.com/2023/08/23/NL2SQL论文阅读/t2.png">
+<meta property="og:image" content="http://yoursite.com/2023/08/23/NL2SQL论文阅读/t4.png">
+<meta property="og:image" content="http://yoursite.com/2023/08/23/NL2SQL论文阅读/t5.png">
+<meta property="og:updated_time" content="2023-08-24T06:50:53.113Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="【NL2SQL】论文阅读">
+<meta name="twitter:description" content="再让我们来看看论文">
+<meta name="twitter:image" content="http://yoursite.com/2023/08/23/NL2SQL论文阅读/1.png">
+
+    
+    <link rel="alternative" href="atom.xml" title="Blog of YQ" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/icon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="//img/IMG_8752.JPG">
+    <link rel="apple-touch-icon-precomposed" href="//img/IMG_8752.JPG">
+    
+    <link rel="stylesheet" href="/css/style.css"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+</html>
+  <body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><header>
+      
+<div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Blog of YQ">Blog of YQ</a></h1>
+				<h2 class="blog-motto">this is subtitle :)</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope="" itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2023/08/23/NL2SQL论文阅读/" title="【NL2SQL】论文阅读" itemprop="url">【NL2SQL】论文阅读</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Yuanqing Zhu" target="_blank" itemprop="author">Yuanqing Zhu</a>
+		
+  </p><p class="article-time">
+    <time datetime="2023-08-22T16:00:00.000Z" itemprop="datePublished"> 发表于 2023-08-23</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><ol>
+<li><a href="#SQLNET">SQLNet: Generating Structured Queries From Natural Language Without Reinforcement Learning</a></li>
+<li><a href="#X-SQL">X-SQL: reinforce schema representation with context / X-SQL: reinforce context info schema representation</a></li>
+<li><a href="#RATSQL">RAT-SQL: Relation-Aware Schema Encoding and Linking for Text-to-SQL Parsers</a></li>
+</ol>
+<h1 id="【SQLNet-Generating-Structured-Queries-From-Natural-Language-Without-Reinforcement-Learning】"><a href="#【SQLNet-Generating-Structured-Queries-From-Natural-Language-Without-Reinforcement-Learning】" class="headerlink" title="【SQLNet: Generating Structured Queries From Natural Language Without Reinforcement Learning】"></a><span id="SQLNET">【SQLNet: Generating Structured Queries From Natural Language Without Reinforcement Learning】</span></h1><ul>
+<li>目标：</li>
+</ul>
+<p>自然语言query → SQL query</p>
+<ul>
+<li>方法:</li>
+</ul>
+<blockquote>
+<p>Employ a sketch-based approach to generage a SQL query from a <em>sketch</em></p>
+</blockquote>
+<ul>
+<li><p>数据：</p>
+<ul>
+<li>WiKiSQL</li>
+<li>为何用此数据：<ol>
+<li>数据量大</li>
+<li>通过众包方式标注，带有人类的思维模式，贴合实际</li>
+<li>该任务生成的SQL仅依赖于自然语言query和表格结构，不依赖表格正文</li>
+<li>数据已经切分好，train/dev/test不重复</li>
+</ol>
+</li>
+</ul>
+</li>
+</ul>
+<p>思想：仅需要填充sketch中的slots，而不是来生成正文和语法</p>
+<p>${§}3.1$ &nbsp; 基于sketch的query合成</p>
+<p>Sketch如下图所示：</p>
+<p><img src="/2023/08/23/NL2SQL论文阅读/1.png" alt="image"></p>
+<p>其中：</p>
+<ul>
+<li>加粗的文本是关键词</li>
+<li>带<code>$</code>的文本是待填充的slots，<code>$</code>表示的是预测的类别</li>
+</ul>
+<p>Sketch的依赖关系如下图所示：</p>
+<p><img src="/2023/08/23/NL2SQL论文阅读/2.png" alt="image"></p>
+<p>可将此模型视为图模型，将查询问题视为图上的推理。比如说$OP_1$仅有两条边到$Column1$和自然语言query，说明$OP_1$的取值仅依赖它们。</p>
+<p><br></p>
+<p>${§}3.2$ &nbsp; 利用column attention预测</p>
+<p>在本节中，将利用一个<code>WHERE</code>预测列名的作为例子，来解释模型的<code>sequence-to-set</code>和<code>column attention</code><br><br><br>$sequence-to-set$</p>
+<p>由于出现在<code>WHERE</code>子句中的列名是所有列名的子集，所以我们不需要“产生”一系列列名，我们仅仅进行预测哪个列名会出现即可，因此我们称这个思想为：<code>sequence-to-set</code>。</p>
+<p>因此我们的目标即是：</p>
+<div style="text-align: center;">
+$P_{wherecol}(col|Q)=σ(u_c^T·E_{col} + u_q^T·E_Q)$  ·····(1)
+</div>
+
+<p>其中</p>
+<ul>
+<li>$σ$为sigmoid函数</li>
+<li>$E_{col}$和$E_Q$为列名和自然语言query的embedding，由一个bi-LSTM的隐层得到（分别在列和query的top上运行，参数权重不共享）</li>
+<li>$u_c^T$和$u_q^T$是两个训练列向量</li>
+<li>上面这些所有的乱七八糟维度都是<code>d</code><br><br><br>$Column-attention$</li>
+</ul>
+<p>对于上式(1)由于仅使用自然语言query的隐藏层信息，在预测列名时可能不会关注一些有用的信息。因此，设计了一个<code>Column attention</code>来计算$E_{Q|Col}$而非$E_Q$。</p>
+<p>我们假设有$d*L$维度的矩阵$H_Q$，L是自然语言Query的长度，$H_Q$的第$i$维表示query第$i$个token从LSTM输出的隐藏层。然后对query的每个token给出attention权重$w$，因此$w$是一个维度为L的列向量，通过以下方式计算</p>
+<div style="text-align: center;">
+$w=softmax(v)$
+</div>
+
+<div style="text-align: center;">
+$v_i={(E_{col})}^T·W·{H_Q^i}$
+</div>
+
+
+<p>其中$H_Q^i$表示$H_Q$的第$i$维。</p>
+<p>得到$w$后，可以得到：</p>
+<div style="text-align: center;">
+$E_{Q|col}={H_Q}·w$
+</div>
+
+<p>通过公式(1)，将<script type="math/tex">E_Q</script>用<script type="math/tex">E_{Q|col}</script>替换，就可以得到传说中的<strong>column attention model</strong>：</p>
+<div style="text-align: center;">
+$P_{wherecol}(col|Q)=σ(u_c^T·E_{col} +u_q^T·E_{Q|col})$
+</div>
+
+<p>作者发现在sigmoid前面加一层效果更好，于是就有了终极model:</p>
+<div style="text-align: center;">
+$P_{wherecol}(col|Q)=σ((u_a^{col})^T·tanh(U_c^{col}·E_col+U_q^col·E_{Q|col})$
+</div>
+
+
+<p>其中，$U_c^{col}$和$U_q^{col}$均是d*d的训练参数，$U_c^{col}$为d维的训练向量</p>
+<p>${§}3.3$ SQLNet以及训练细节</p>
+<p>SELECT和WHERE是分开处理的，首先是WHERE，然后是SELECT。</p>
+<p>${§}3.3.1$ WHERE</p>
+<ul>
+<li><p>column slots</p>
+<p>设置一个$τ ∈ (0, 1)$，选择所有$P<em>{wherecol}(col|Q)&gt;=τ$的列。由于种种原因，我们选择$P</em>{wherecol}(col|Q)$为top-K的列名作为候选，将问题转化为一个分类问题，即</p>
+  <div style="text-align: center;">
+
+  $P_{@col}(K|Q)=softmax(U_1^{@col}·tanh(U_2^{@col}·E_{Q|Q}))_i$
+
+  </div>
+
+<p>  <strong>(由于渲染问题所有的“#”用“@”代替)</strong></p>
+<p>  其中$U_1^{@col}$和$U_2^{@col}$是$(N+1)xd$ 和 $dxd$。</p>
+<p>  SQLNet会选择K个列，选择使的$P_{@col(k|Q)}$最大的列名</p>
+</li>
+<li><p>OP slot</p>
+<p>把这个当成一个三分类，因此就是计算：</p>
+  <div style="text-align: center;">
+
+  $P_{op}(i|Q,col)=softmax(U_1^{op}·tanh(U_c^{op}·E_{col}+U_q^{op}·E_{Q|col}))$
+
+  </div>
+</li>
+<li><p>VALUE slot</p>
+<p>  使用了一个seq-to-seq结构，encoder使用了bi-LSTM，decoder用了一个指针网络</p>
+</li>
+</ul>
+<p>${§}3.3.2$ SELECT</p>
+<p>TODO</p>
+<p>${§}3.3.3$ 其他训练细节</p>
+<ul>
+<li>分词使用了StanfordCoreNLP</li>
+<li>使用了GloVe Embedding</li>
+<li>设计了一个特殊的loss【有个公式】</li>
+<li>LSTM的权重都不共享</li>
+<li>在训练过程中，用Adam每100epoch更新一下</li>
+</ul>
+<h1 id="X-SQL-reinforce-schema-representation-with-context-X-SQL-reinforce-context-info-schema-representation"><a href="#X-SQL-reinforce-schema-representation-with-context-X-SQL-reinforce-context-info-schema-representation" class="headerlink" title="X-SQL: reinforce schema representation with context / X-SQL: reinforce context info schema representation"></a><span id="X-SQL">X-SQL: reinforce schema representation with context / X-SQL: reinforce context info schema representation</span></h1><h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h3><p>x-sql：基于神经网络模型的增强预训练模型，有以下三点贡献&amp;观点：</p>
+<ol>
+<li><p>nl2sql有两类问题：</p>
+<ol>
+<li>非结构化query</li>
+<li><p>结构化schema</p>
+<p>我们利用一个现有的模型（MT-DNN）来捕捉这种变化，并将无结构的query合并成全局性的文本表示，然后用于为下游任务增强“结构化schema”的表示。</p>
+<p>这是第一次用bert来尝试处理问题依赖结构，并且对结构化信息构建了一个新的表示方法。</p>
+</li>
+</ol>
+</li>
+<li><p>对于有结构的schema数据，一部分SQL语法是“有界的”，例如：</p>
+<ol>
+<li>MIN仅用于数字列</li>
+<li><code>&gt;</code> 不会出现在字符串列</li>
+</ol>
+<ul>
+<li>第${§}2.1$节描述了类别embedding，并修改了预训练语言表示</li>
+<li>第${§}2.2$节展示了如何通过学习一个分离的类别embedding来增强子任务</li>
+</ul>
+</li>
+<li><p>之前的方法有这么一个问题：</p>
+<p> 由于每个分类器是独立优化，并且他们的输出不能直接比较，之前方法使用多个二元分类器不能完成对列见关系的预测。<strong>因此</strong>，x-sql使用了一个列表示全局排序方法，使用KL散度作为目标来将所有列映射到一个可比空间。</p>
+</li>
+</ol>
+<h3 id="模型结构"><a href="#模型结构" class="headerlink" title="模型结构"></a>模型结构</h3><ol>
+<li>sequence encoder</li>
+<li>context enhanced schema encoder </li>
+<li>output layer</li>
+</ol>
+<h4 id="1-sequence-encoder"><a href="#1-sequence-encoder" class="headerlink" title="1. sequence encoder"></a>1. sequence encoder</h4><p>使用了一个类Bert的模型，有以下改变：</p>
+<ol>
+<li>在每个表结构中添加一个空列[EMPTY]，这个空列会在$§{2.4}$节被清除</li>
+<li>用type embedding替换segment embedding，这里会从四个类学习embedding： <ol>
+<li>question</li>
+<li>categorial列</li>
+<li>numerical 列</li>
+<li>special empty 列</li>
+</ol>
+</li>
+<li>使用MT-DNN作为初始化encoder（与Bert结构类似，但是是由多个GLUE任务训练得到的，在下游NLP任务中展现了不错的表示性能）</li>
+</ol>
+<p>将Bert的[CLS]重命名为[CTX]（目的：注重当前捕获到的上下文信息，而非为了下游任务作表示）</p>
+<p>为了实现以上的变化，对比<code>SQLova</code>中的NL2SQL layer，我们的方法主要是用了一个足够简单但是有效的layer</p>
+<h4 id="2-context-enhanced-schema-encoder"><a href="#2-context-enhanced-schema-encoder" class="headerlink" title="2. context enhanced schema encoder"></a>2. context enhanced schema encoder</h4><p>令<script type="math/tex">h_{[CTX]}, h_{q1}, ......, h_{qn}, h_{[SEP]}, h_{C_{11}}, ......, h_{[SEP]}, h_{C_{21}}, ...h_{[SEP]}, ..., h_{[EMPTY]}, h_{[SEP]}</script>表示Encoder的输出，每个均是d维</p>
+<ul>
+<li>每个question token被编为$h_{qi}$</li>
+<li><script type="math/tex">h_{C_{ij}}</script> 表示第$i$列的第$j$个token</li>
+</ul>
+<p>故 这个Encoder的目的是：<strong>对每一列$i$学习一个新的表示$h_{C_i}$</strong>，通过使用$h_{[CTX]}$来捕捉全局上下文信息来增强原始编码器的输出。</p>
+<p>因此，$h_{C_i}$可以表示为：</p>
+<div style="text-align: center;">
+
+$h_{C_i}=\sum_{t=1}^{n_i}\alpha_{it}·h_{C_{it}}$······（1）
+
+</div>
+
+<p>其中：</p>
+<ul>
+<li>$n_i$表示列$i$中token数</li>
+<li><script type="math/tex; mode=display">\alpha_{it}=softmax(S_{it})</script></li>
+<li><script type="math/tex">S_{it}</script>表示第$i$列的第$t$个token捕捉全局上下文信息的好坏，<script type="math/tex">S_{it}=f(U·h_{[CTX]}/\sqrt{d}, V·h_{[C_{it}]}/\sqrt{d})，{U,V}\in{R^{m\times{d}}}</script>，</li>
+</ul>
+<p><br></p>
+<h4 id="3-output-layer"><a href="#3-output-layer" class="headerlink" title="3. output layer"></a>3. output layer</h4><p>output layer结合了SQL程序以及：</p>
+<ol>
+<li>sequence encoder 输出, <script type="math/tex">h_{[CTX]}, h_{q1}, ..., h_{qn}</script></li>
+<li>context enhanced schema encoder 输出，<script type="math/tex">h_{C_1}, h_{C_2}, ..., h_{[EMPTY]}</script></li>
+</ol>
+<p>这个output layer类似于<code>Xu et al.(2017)</code>和<code>Hwang et al.(2019)</code>，该任务被划分为6个子任务，每一部分均是最终SQL pragram的一部分。</p>
+<p><br></p>
+<p>首先介绍一个使用<script type="math/tex">h_{[CTX]}</script>基于sub-network调整schema representation <script type="math/tex">h_{C_i}</script>的任务，特别是：</p>
+ <div style="text-align: center;">
+
+ $rC_i=LayerNorm(U'·h_{[CTX]} + V'·h_{C_i})$ ······（2） 
+</div> 
+
+<p>与公式（1）不同的是，对于每个子任务这个计算式分别进行的，以便于schema representation更好的对齐每个子任务应重点关注的自然语言query的特定部分。</p>
+<p>（注：这个<script type="math/tex">rC_i</script>在另一篇论文中提到，虽然<script type="math/tex">h_{C_i}</script>已经通过token权重加强了上下文信息，但是<script type="math/tex">h_{[CTX]}</script>对query也有不错的~）</p>
+<h5 id="任务S-COL"><a href="#任务S-COL" class="headerlink" title="任务S-COL"></a>任务S-COL</h5><p>预测<code>SELECT</code>列，那么给SELECT选择的列$C_i$即为：</p>
+<div style="text-align: center;">
+
+$P^{S-COL}(C_i)=Softmax(W^{S-COL}·rC_i)$
+
+</div>
+
+<p>其中S-COL仅依赖于$rC_i$</p>
+<h5 id="任务S-AGG"><a href="#任务S-AGG" class="headerlink" title="任务S-AGG"></a>任务S-AGG</h5><p>对列预测<code>Aggregator</code>，为了增强aggregator依赖被选择列的类别（例如<code>MIN</code>不会用于string类型的列），我们明确地利用了<code>type embedding</code>，则选择的AGG可以表示为：</p>
+<div style="text-align: center;">
+
+$p^{S-AGG}(A_j|C_i)=Softmax(W^{S-AGG}{[j, :]\times LayerNorm(U''·h_{[CTX]} + V''·h_{C_i} + E^T_{C_i})}$····（3）
+
+</div>
+
+<p>其中，$W^{S-AGG}\in{R^{6\times d}}$。</p>
+<p>与其他子任务不同的是，这里我们没有使用<script type="math/tex">rC_i</script>而是使用了<script type="math/tex">h_{C_i}</script>，因为我们使用了一个类似于公式（2）的方法来合并列的类别，<code>type embedding</code><script type="math/tex">E^T_{C_i}</script>是由sequence encoder单独学来的。</p>
+<div style="text-align: center;">
+
+以下四个任务是围绕WHERE同时得到的
+
+</div>
+
+<h5 id="任务W-NUM"><a href="#任务W-NUM" class="headerlink" title="任务W-NUM"></a>任务W-NUM</h5><p>W-NUM使用$W^{W-NUM}·h_{[CTX]}$来计算WHERE的条数，被建模为四个可能标签的分类任务，每个标签代表最终SQL语句中的1~4个where子句。不过这没法预测where子句为空的情况，这种情况会通过KL散度交给W-COL来完成。</p>
+<h5 id="任务W-COL"><a href="#任务W-COL" class="headerlink" title="任务W-COL"></a>任务W-COL</h5><div style="text-align: center;">
+
+$p^{W-COL}(C_i)=Softmax(W^{W-COL}·rC_i)$
+
+</div>
+
+<p>（注：$p^{W-COL}$是一个分布，基于W-NUM，得到where选择的top score列）</p>
+<h5 id="任务W-OP"><a href="#任务W-OP" class="headerlink" title="任务W-OP"></a>任务W-OP</h5><p>W-OP对于给定的where列选择合适的操作符，即：</p>
+<div style="text-align: center;">
+
+$p^{W-OP}(O_j|C_i)=Softmax(W^{W-OP}·[j, :]·rC_i)$
+
+</div>
+
+<p>这个操作符也依赖于列的类别（text/real），能够类似于公式（3）的S-AGG进行建模。</p>
+<h5 id="任务W-VAL"><a href="#任务W-VAL" class="headerlink" title="任务W-VAL"></a>任务W-VAL</h5><p>W-VAL是从query中预测where语句的子串，因此转化为预测子串在query的起始和终止位置，即：</p>
+<div style="text-align: center;">
+
+$p^{W-VAL}_{start}(q_j|C_i)=Softmax g(U^{start}·h_{q_j} + V^{start}·rC_i)$
+
+$p^{W-VAL}_{end}(q_j|C_i)=Softmax g(U^{end}·h_{q_j} + V^{end}·rC_i)$
+
+</div>
+
+<p>其中$g(x):=W·x+b$。</p>
+<h3 id="Training-amp-Inference"><a href="#Training-amp-Inference" class="headerlink" title="Training&amp;Inference"></a>Training&amp;Inference</h3><h4 id="1-Training"><a href="#1-Training" class="headerlink" title="1. Training"></a>1. Training</h4><p>在训练过程中，使用了：</p>
+<ul>
+<li>交叉熵，包括S-COL, S-AGG, W-NUM, w-VAL</li>
+<li>KL散度，包括W-COL</li>
+</ul>
+<h4 id="2-Inference"><a href="#2-Inference" class="headerlink" title="2. Inference"></a>2. Inference</h4><p>若高分列是特殊的[EMPTY]，我们将忽视”W-NUM”的输出，并且返回空WHERE；否则，选择由W-NUM和W-COL指定的非[EMPTY]的top-n</p>
+<h3 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h3><h4 id="数据"><a href="#数据" class="headerlink" title="数据"></a>数据</h4><p>WiKiSQL，train/dev/test</p>
+<h4 id="评价"><a href="#评价" class="headerlink" title="评价"></a>评价</h4><ul>
+<li>logical form accuracy</li>
+<li>execution accuracy</li>
+</ul>
+<h4 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h4><ol>
+<li>lf、ex准确率</li>
+<li>每个子任务的准确率</li>
+</ol>
+<p><img src="/2023/08/23/NL2SQL论文阅读/image1.png" alt="image"></p>
+<div style="text-align: center;">
+From `X-SQL: reinforce schema representation with context`
+</div>
+
+<p><img src="/2023/08/23/NL2SQL论文阅读/image2.png" alt="image"></p>
+<div style="text-align: center;">
+From `X-SQL: REINFORCE CONTEXT INTO SCHEMA REPRESENTATION`
+</div>
+
+<h1 id="RAT-SQL-Relation-Aware-Schema-Encoding-and-Linking-for-Text-to-SQL-Parsers"><a href="#RAT-SQL-Relation-Aware-Schema-Encoding-and-Linking-for-Text-to-SQL-Parsers" class="headerlink" title="RAT-SQL: Relation-Aware Schema Encoding and Linking for Text-to-SQL Parsers"></a><span id="RATSQL">RAT-SQL: Relation-Aware Schema Encoding and Linking for Text-to-SQL Parsers</span></h1><h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>现有两个<strong>挑战</strong>：</p>
+<ol>
+<li>如何为语义解析器提供编码数据库关系？</li>
+<li>如何将数据库列名与给定的query对齐</li>
+</ol>
+<p>本文<strong>工作</strong>：</p>
+<p>基于关系感知的自注意力机制，在一个text-to-sql encoder内解决<code>schema encoding</code>， <code>schema linking</code>和<code>特征表示</code>三个问题</p>
+<h2 id="Introduction-1"><a href="#Introduction-1" class="headerlink" title="Introduction"></a>Introduction</h2><p>schema表示（<code>schema generalization</code>）<strong>难点</strong>：</p>
+<ol>
+<li>任何text-to-sql模型均要将schema构建为适合解码成可能包含列名和表名的SQL语句的向量表示</li>
+<li><code>1</code>中得到的表示应该编码了schema的所有信息，包括列类别、主键、外键</li>
+<li>模型需要识别（可能与训练过程不同的）NL问题所设计的列名和表格，故成：<code>schema linking</code>，即将<code>question</code>与列、表进行对齐</li>
+</ol>
+<p>具体描述本文<strong>工作</strong></p>
+<p>（RATSQL）利用关系感知的自注意力机制来构建schema和question的全局推理，用于在给定的question和数据库schema中对<strong>关系结构</strong>进行编码。</p>
+<h2 id="Related-Work"><a href="#Related-Work" class="headerlink" title="Related Work"></a>Related Work</h2><ol>
+<li>relation-aware self-attention<a href="https://www.aclweb.org/anthology/N18-2074.pdf" target="_blank" rel="noopener">paper</a></li>
+</ol>
+<blockquote>
+<p>Peter Shaw, Jakob Uszkoreit, and Ashish Vaswani. 2018. Self-Attention with Relative Position Repre- sentations. In Proceedings of the 2018 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies, Volume 2 (Short Papers), pages 464– 468.</p>
+</blockquote>
+<ol>
+<li>AST-based structural <a href="https://www.aclweb.org/anthology/P19-1444.pdf" target="_blank" rel="noopener">paper</a></li>
+</ol>
+<blockquote>
+<p>Jiaqi Guo, Zecheng Zhan, Yan Gao, Yan Xiao, Jian-Guang Lou, Ting Liu, and Dongmei Zhang. 2019. Towards complex text-to-SQL in cross- domain database with intermediate representation. In Proceedings of the 57th Annual Meeting of the Association for Computational Linguistics, pages 4524–4535.</p>
+</blockquote>
+<h2 id="Relation-Aware-Self-Attention"><a href="#Relation-Aware-Self-Attention" class="headerlink" title="Relation-Aware Self-Attention"></a>Relation-Aware Self-Attention</h2><p>一个正常的self-attention encoder/transformer:</p>
+<p>给定输入：</p>
+<p><img src="/2023/08/23/NL2SQL论文阅读/ratsql1.png" alt="image"></p>
+<p>有：</p>
+<p><img src="/2023/08/23/NL2SQL论文阅读/ratsql2.png" alt="image"></p>
+<p>其中，$1 \le h  \le H$，这里attention权重<script type="math/tex">\alpha_{ij}^{(h)}</script>就是input的关系信息</p>
+<p>一个self-attention layer：</p>
+<p><img src="/2023/08/23/NL2SQL论文阅读/ratsql3.png" alt="image"></p>
+<p>这里，<script type="math/tex">r_{ij}</script>就编码了$x_i$和$x_j$之间已知的关系</p>
+<p>假设<script type="math/tex">\mathbb{R}</script>为关系特征集合，那么<script type="math/tex">\mathbb{R}^{(s)} \subseteq X \times X</script>。RATSQL对每个(i, j)边用<script type="math/tex">r_{ij}^K=r_{ij}^V=concat(\rho_{ij}^{(1)}, ..., \rho_{ij}^{(R)})</script>表示所有的预定义特征。</p>
+<p>这里<script type="math/tex">\rho_{ij}^{(s)}</script>要么是一个从关系<script type="math/tex">\mathbb{R}</script>学到的embedding(如果该关系适用于相应的边)，要么是一个零向量。</p>
+<h2 id="RAT-SQL"><a href="#RAT-SQL" class="headerlink" title="RAT-SQL"></a>RAT-SQL</h2><h3 id="1-输入输出定义"><a href="#1-输入输出定义" class="headerlink" title="1. 输入输出定义"></a>1. 输入输出定义</h3><h5 id="基本定义："><a href="#基本定义：" class="headerlink" title="基本定义："></a>基本定义：</h5><ul>
+<li>输入：<ol>
+<li>natural language question <strong>$Q$</strong></li>
+<li>schema <strong><script type="math/tex">S=<C,T></script></strong></li>
+</ol>
+</li>
+<li>输出：<ol>
+<li>SQL <strong>P</strong> （abstract syntax tree <code>T</code>）</li>
+</ol>
+</li>
+<li>其中<ul>
+<li>Question：<script type="math/tex">Q=q_1, ..., q_{|Q|}</script>是一个words序列</li>
+<li>column：<script type="math/tex">C={\{c_1, ..., c_{|C|}\}}</script>，每个$c_i$还包含type，<script type="math/tex">\tau \in {\{number, text\}}</script></li>
+<li>table：<script type="math/tex">T={\{t_1, ..., t_{|T|}\}}</script></li>
+</ul>
+</li>
+</ul>
+<p>每个列名<script type="math/tex">c_i</script>均包括多个words，如<script type="math/tex">c_{i,1}, ..., c_{i,|c_i|}</script>；表格名<script type="math/tex">t_i</script>也包括多个words，如<script type="math/tex">t_{i,1}, ..., t_{i,|t_i|}</script></p>
+<h5 id="将database-schema表示为："><a href="#将database-schema表示为：" class="headerlink" title="将database schema表示为："></a>将database schema表示为：</h5><p><img src="/2023/08/23/NL2SQL论文阅读/ratsql4.png" alt="image"></p>
+<p>其中：</p>
+<ul>
+<li><img src="/2023/08/23/NL2SQL论文阅读/ratsql5.png" alt="image"></li>
+<li>$\varepsilon$为边（具体见下图）</li>
+</ul>
+<p><img src="/2023/08/23/NL2SQL论文阅读/ratsql6.png" alt="image"></p>
+<h5 id="因为以上不包括question信息，所以设计了新的图："><a href="#因为以上不包括question信息，所以设计了新的图：" class="headerlink" title="因为以上不包括question信息，所以设计了新的图："></a>因为以上不包括question信息，所以设计了新的图：</h5><p>$\mathcal{G}_Q=&lt;\mathcal{V}_Q, \mathcal{E}_Q&gt;$</p>
+<p>其中：</p>
+<ul>
+<li>$\mathcal{V}_Q=\mathcal{V}\cup\mathcal{Q}=\mathcal{C}\cup\mathcal{T}\cup\mathcal{Q}$</li>
+<li><script type="math/tex">\mathcal{E}_Q=\mathcal{E}\cup\mathcal{E}_{Q\leftrightarrow S}|</script>（后面会讲question和schema之间的特殊关系）</li>
+</ul>
+<h5 id="encoder-decoder"><a href="#encoder-decoder" class="headerlink" title="encoder-decoder"></a>encoder-decoder</h5><script type="math/tex; mode=display">\mathcal{G}_Q$$ → $$f_{enc}$$ → **representations** → $$f_{dec}$$→ $$P_r(P|\mathcal{G}_Q)</script><h3 id="2-Relation-Aware-Input-Encoding"><a href="#2-Relation-Aware-Input-Encoding" class="headerlink" title="2. Relation-Aware Input Encoding"></a>2. Relation-Aware Input Encoding</h3><ol>
+<li>Glove</li>
+<li>BiLSTM</li>
+<li>BERT</li>
+</ol>
+<p>因此对于<img src="/2023/08/23/NL2SQL论文阅读/ratsql13.png" alt="image">，构建输入为：</p>
+<p><img src="/2023/08/23/NL2SQL论文阅读/ratsql12.png" alt="image"></p>
+<h3 id="3-Schema-Linking"><a href="#3-Schema-Linking" class="headerlink" title="3. Schema Linking"></a>3. Schema Linking</h3><p>在<script type="math/tex">\varepsilon_{Q\leftrightarrow S}</script>的schema linking relations辅助模型去做question和schema的对齐，对齐也主要包括两种：<code>match names</code>， <code>match values</code>。</p>
+<h5 id="Name-Based-Linking"><a href="#Name-Based-Linking" class="headerlink" title="Name-Based Linking"></a>Name-Based Linking</h5><p>是指列名/表名完全或部分地出现在question中，self-attention在这里还是有一些的缺陷，所以作者：</p>
+<ol>
+<li>对question取1~5的n-gram，判别每个n-gram是exact match还是partial match</li>
+<li>对于<script type="math/tex">x_i\in Q, x_j\in S</script>（或反过来），我们约定<script type="math/tex">r_{ij}\in \varepsilon_{Q\leftrightarrow S}</script>属于：<br><img src="/2023/08/23/NL2SQL论文阅读/ratsql7.png" alt="image"></li>
+</ol>
+<h5 id="Value-Based-Linking"><a href="#Value-Based-Linking" class="headerlink" title="Value-Based Linking"></a>Value-Based Linking</h5><p>是指Question与schema中的内容（value）相关联，因此也会间接影响到SQL，所以作者：</p>
+<ol>
+<li>对$q_i$和列名$c_j$增加了一个<code>Column-Value</code>，即$q_i$匹配了列$c_j$的任意一个值</li>
+</ol>
+<h5 id="Memeory-Schema-Alignment-Matrix"><a href="#Memeory-Schema-Alignment-Matrix" class="headerlink" title="Memeory-Schema Alignment Matrix"></a>Memeory-Schema Alignment Matrix</h5><p>TODO</p>
+<h3 id="4-Decoder"><a href="#4-Decoder" class="headerlink" title="4. Decoder"></a>4. Decoder</h3><p>decoder参考了</p>
+<blockquote>
+<p>Pengcheng Yin and Graham Neubig. 2017. A Syntactic Neural Model for General-Purpose Code Generation. In Proceedings of the 55th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers), pages 440–450.</p>
+</blockquote>
+<p>的树结构。</p>
+<p>（该方法）根据深度优先遍历，通过一个LSTM来输出一个<code>decoder action</code>序列，像生成句法树一样生成SQL。这个action的产生遵从以下两种方式：</p>
+<ol>
+<li>根据语法规则扩展最后生成的节点，称为<code>ApplyRule</code></li>
+<li>从schema中选择一个column或者table，成为<code>SelectColumn</code>或者<code>SelectTable</code></li>
+</ol>
+<p>准确来说，</p>
+<p><img src="/2023/08/23/NL2SQL论文阅读/ratsql8.png" alt="image"></p>
+<p>其中<script type="math/tex">\mathcal{Y}=f_{enc}(\mathcal{G}_Q)</script> 是question和schema最后的encoding变量，<script type="math/tex">a_{<t}</script> 是之前所有的actions。因此对于不同的action，有不同操作，如下：</p>
+<ul>
+<li>对于ApplyRule，<script type="math/tex">Pr(a_t=ApplyRule[R]|a_{<t},y)=softmax_R(g(\boldsymbol{h}_t))</script></li>
+<li>对于SelectColumn，<img src="/2023/08/23/NL2SQL论文阅读/ratsql11.png" alt="image"></li>
+</ul>
+<h2 id="Experiments"><a href="#Experiments" class="headerlink" title="Experiments"></a>Experiments</h2><p>本小结详细讲了实验相关细节，描述了用到的方案如StanfordCoreNLP，PyTorch，BERT，batch size=24训练了9w个step，利用了超参数搜索的一些方式。由于spider没有test数据公开，所以论文也在dev上进行了验证和实验。并给出了Spider和WiKiSQL两个数据集的实验结果。</p>
+<p>在错误分析部分，分析主要有以下三类错误：</p>
+<ol>
+<li>18%：由于SQL表述形式不同但是实际意义相同</li>
+<li>39%：在Select部分有丢失或者错误</li>
+<li>29%：在Where部分错误</li>
+</ol>
+<h2 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h2><p>TODO</p>
+<h2 id="按语"><a href="#按语" class="headerlink" title="按语"></a>按语</h2><p>本篇论文是20年微软发表在ACL上的论文，基本达到了当时的sota水平，同时开源了项目代码，有极大的研究价值。纵观整个项目，项目代码较为优雅，在执行上做了很多优化，利用装饰器封装了一个全局的字典用于存储所有变量，方便整个项目在任意位置访问资源，这种写法可以深入学习。模型结构方面，还是经典的encoder-decoder，在encoder部分做了很多的尝试，在decoder部分还是采用了IRNet那种AST的方式。</p>
+<p>作者主要是参考了relation-aware self-attention，即将schema和question之间的关系在做attention的时候加进去，从而让模型学得Question与Schema之间的关联信息。所以论文的很多工作是围绕着如何描述它们之间的信息展开的，例如定义了一些column和table之间的type（table 1），在question和column/table之间做match（name-based, value-based），以及（还没看）。在decoder阶段是利用了LSTM深度优先生成树结构，从而构成SQL语句。</p>
+<hr>
+<h1 id="实验随手记"><a href="#实验随手记" class="headerlink" title="实验随手记"></a>实验随手记</h1><h2 id="data-processes"><a href="#data-processes" class="headerlink" title="data processes"></a>data processes</h2><p><code>rat_sql_master/ratsql/commands/preprocess.py</code>，创建Processor()对象，包含：</p>
+<p><img src="/2023/08/23/NL2SQL论文阅读/r1.png" alt="image"></p>
+<p>读取数据为SpiderDataset的逻辑：rat_sql_master/ratsql/datasets/spider.py</p>
+<ol>
+<li>读取table的逻辑</li>
+</ol>
+<p>rat<em>sql<em>master/ratsql/datasets/spider<em>lib/evaluation.py<br>的build<em>foreign_key_map函数，用来构建外键之间的关系，比如：先将table和列弄成“</em></em>表格名.列名</em></em>”的形式，然后构建映射关系</p>
+<p><img src="/2023/08/23/NL2SQL论文阅读/r2.png" alt="image"></p>
+<p>以下是处理每条数据的逻辑</p>
+<p><img src="/2023/08/23/NL2SQL论文阅读/r3.png" alt="image"></p>
+<p>这里self.model_preproc.validate_item调用的是rat_sql_master/ratsql/models/enc_dec.py的EncDecModel的Preproc的validate_item，即：</p>
+<p><img src="/2023/08/23/NL2SQL论文阅读/r4.png" alt="image"></p>
+<p>这里self.enc_preproc是rat_sql_master/ratsql/models/spider/spider_enc.py的SpiderEncoderBertPreproc类；self.dec_preproc是NL2CodeDecoderPreproc类，首先进入SpiderEncoderBertPreproc类的validate_item，这里item是一个SpiderItem：</p>
+<p><img src="/2023/08/23/NL2SQL论文阅读/r5.png" alt="image"></p>
+<p>（接上）</p>
+<ol>
+<li>enc_result, enc_info = self.enc_preproc.validate_item(item, section)过程</li>
+</ol>
+<p>SpiderEncoderBertPreproc类的validate_item的执行逻辑为：</p>
+<p><img src="/2023/08/23/NL2SQL论文阅读/r6.png" alt="image"></p>
+<p>其中，self._preprocess_schema(item.schema)做的事情是：</p>
+<p>处理一下schema，然后返回一个处理结果</p>
+<p><img src="/2023/08/23/NL2SQL论文阅读/r7.png" alt="image"></p>
+<p>处理的结果是个类，大概是下面的样子：</p>
+<p><img src="/2023/08/23/NL2SQL论文阅读/r8.png" alt="image"></p>
+<p>至此，enc_result, enc_info = self.enc_preproc.validate_item(item, section)部分完成</p>
+<ol>
+<li>dec_result, dec_info = self.dec_preproc.validate_item(item, section)过程</li>
+</ol>
+<p>这一部分会进行sql的解析，</p>
+<p><img src="/2023/08/23/NL2SQL论文阅读/r9.png" alt="image"></p>
+<p>这里self.grammar是来自于rat_sql_master/ratsql/grammars/spider.py：</p>
+<p><img src="/2023/08/23/NL2SQL论文阅读/r10.png" alt="image"></p>
+<p>在解析过程会调用rat_sql_master/ratsql/grammars/spider.py的SpiderLanguage的parse_sql函数，然后依次对sql的每个部分进行解析</p>
+<ol>
+<li>parse_select</li>
+<li>parse_from</li>
+</ol>
+<p><img src="/2023/08/23/NL2SQL论文阅读/r11.png" alt="image"></p>
+<ol>
+<li>2.1 parse_table_unit</li>
+</ol>
+<p>输入：table_unit为：[‘table_unit’, 0]</p>
+<ol>
+<li>parse_cond</li>
+</ol>
+<ul>
+<li>在处理where语句有用到</li>
+</ul>
+<p>在完成解析后，对sql dict构建AST树结构</p>
+<p>处理完毕后，调用add_item</p>
+<p><img src="/2023/08/23/NL2SQL论文阅读/r12.png" alt="image"></p>
+<p>基本上主要是对train的数据进行操作</p>
+<p>操作后，进行保存：</p>
+<ol>
+<li>spider_enc.py保存vocab，enc目录下的train、dev<br>在其中保存enc_vocab.json， enc_word_freq.json</li>
+<li>decoder.py 保存vocab，dec目录下的train、dev<br>在decoder.py中保存：observed_productions.json， grammar_rules.json，dec_vocab.json</li>
+</ol>
+<h2 id="train"><a href="#train" class="headerlink" title="train"></a>train</h2><p>输入的batch结构：</p>
+<p><img src="/2023/08/23/NL2SQL论文阅读/t1.png" alt="image"></p>
+<p>然后在compute_loss的时候调用的是_compute_loss_enc_batched</p>
+<p>里面对encoder input进行编码，即：</p>
+<p><img src="/2023/08/23/NL2SQL论文阅读/t2.png" alt="image"></p>
+<p>这个过程大概是这样的：分词，做index的映射</p>
+<p><img src="/2023/08/23/NL2SQL论文阅读/t4.png" alt="image"></p>
+<p>完成encoder部分后，开始进行decoder的loss计算部分：</p>
+<p><img src="/2023/08/23/NL2SQL论文阅读/t5.png" alt="image"></p>
+<p>目前调用的是compute_mle_loss，将desc_enc转为TrainTreeTraversal，然后根据rule执行遍历，最后将loss进行concat，得到最终的loss</p>
+<h2 id="infer"><a href="#infer" class="headerlink" title="infer"></a>infer</h2><p>TODO</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/NLP/">NLP</a><a href="/tags/NL2SQL/">NL2SQL</a>
+  </div>
+
+</div>
+
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2023/08/24/NL2SQLschema表示/" title="【NL2SQL】DB Schema表示">
+  <span>
+  【NL2SQL】DB Schema表示</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2023/08/22/NL2SQL任务简介/" title="【NL2SQL】任务简介">
+ <span>【NL2SQL】任务简介
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+<div id="authorInfo">
+	
+		<div class="author-img"></div>		
+	
+	<div class="social-info">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:candnes@sina.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+
+	</div>
+</div>
+
+  
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/NLP/" title="NLP">NLP<sup>17</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Coreference-Resolution/" title="Coreference Resolution">Coreference Resolution<sup>8</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/NL2SQL/" title="NL2SQL">NL2SQL<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/踩坑/" title="踩坑">踩坑<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/学习/" title="学习">学习<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/GNN/" title="GNN">GNN<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/多模态/" title="多模态">多模态<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/爬虫/" title="爬虫">爬虫<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Algorithm/" title="Algorithm">Algorithm<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/python/" title="python">python<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/深度学习/" title="深度学习">深度学习<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+		
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/hsihohuang/kiddochan" target="_blank" title="Kiddochan">Kiddochan</a> © 2023 
+		
+		<a href="/about" target="_blank" title="Yuanqing Zhu">Yuanqing Zhu</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

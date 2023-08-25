@@ -1,0 +1,631 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  
+    <title>PLM瞎扯 | Blog of YQ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Yuanqing Zhu">
+    
+
+    
+    <meta name="description" content="记录一些使用PLM的坑">
+<meta name="keywords" content="NLP,深度学习">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PLM瞎扯">
+<meta property="og:url" content="http://yoursite.com/2023/03/01/PLM瞎扯/index.html">
+<meta property="og:site_name" content="Blog of YQ">
+<meta property="og:description" content="记录一些使用PLM的坑">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2023/03/01/PLM瞎扯/1.png">
+<meta property="og:image" content="http://yoursite.com/2023/03/01/PLM瞎扯/2.png">
+<meta property="og:image" content="http://yoursite.com/2023/03/01/PLM瞎扯/3.png">
+<meta property="og:image" content="http://yoursite.com/2023/03/01/PLM瞎扯/4.png">
+<meta property="og:image" content="http://yoursite.com/2023/03/01/PLM瞎扯/5.png">
+<meta property="og:image" content="http://yoursite.com/2023/03/01/PLM瞎扯/6.png">
+<meta property="og:updated_time" content="2023-07-21T03:27:56.736Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PLM瞎扯">
+<meta name="twitter:description" content="记录一些使用PLM的坑">
+<meta name="twitter:image" content="http://yoursite.com/2023/03/01/PLM瞎扯/1.png">
+
+    
+    <link rel="alternative" href="atom.xml" title="Blog of YQ" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/icon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="//img/IMG_8752.JPG">
+    <link rel="apple-touch-icon-precomposed" href="//img/IMG_8752.JPG">
+    
+    <link rel="stylesheet" href="/css/style.css"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+</html>
+  <body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><header>
+      
+<div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Blog of YQ">Blog of YQ</a></h1>
+				<h2 class="blog-motto">this is subtitle :)</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope="" itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2023/03/01/PLM瞎扯/" title="PLM瞎扯" itemprop="url">PLM瞎扯</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Yuanqing Zhu" target="_blank" itemprop="author">Yuanqing Zhu</a>
+		
+  </p><p class="article-time">
+    <time datetime="2023-02-28T16:00:00.000Z" itemprop="datePublished"> 发表于 2023-03-01</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<p><img src="/2023/03/01/PLM瞎扯/1.png" alt="image"></p>
+<hr>
+<h1 id="BERT"><a href="#BERT" class="headerlink" title="BERT"></a>BERT</h1><h2 id="1-BERT-DNN文本分类"><a href="#1-BERT-DNN文本分类" class="headerlink" title="1. BERT-DNN文本分类"></a>1. BERT-DNN文本分类</h2><p><img src="/2023/03/01/PLM瞎扯/2.png" alt="image"></p>
+<p>基本结构及流程：<strong>假设</strong>现在有情感分类任务，定义其任务为输入一句话，判断其情感倾向（正向、负向、中性）</p>
+<ol>
+<li>输入句子长度小于500的文本<code>x</code></li>
+<li>通过BERT获取句子表示（假设为<code>v</code>，其维度为768维）</li>
+<li>将<code>v</code>输入到一个深度神经网络（Deep Neural Networks，DNN，其实就是个全连接层），得到输出为<code>v_1</code>，其维度为64维</li>
+<li>将<code>v_1</code>接dropout层，得到输出<code>v_1&#39;</code>，其维度与<code>v_1</code>相同</li>
+<li>将<code>v_1&#39;</code>再接入第二个DNN，得到输出为<code>v_2</code>，其维度为3</li>
+<li>将文本<code>x</code>对应的标签转为one_hot向量<code>y</code></li>
+<li>计算<code>v_2</code>与<code>y</code>的交叉熵损失（<code>tf.nn.softmax_cross_entropy_with_logits</code>）</li>
+</ol>
+<p>通过以上过程，可以基于bert训练一个效果尚可的情感分类模型。</p>
+<p>对于以上bert-dnn结构的模型，如果稍加修改即可变为多标签分类，即将<code>tf.nn.softmax_cross_entropy_with_logits</code>改为<code>sigmoid_cross_entropy_with_logits</code>即可。</p>
+<p>实践过的项目：</p>
+<ul>
+<li>内容营销<ul>
+<li>略</li>
+</ul>
+</li>
+<li>勘探院文档分类<ul>
+<li>略</li>
+</ul>
+</li>
+</ul>
+<details>
+<summary>tensorflow版bert_embed</summary>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">bert_embed</span><span class="params">(self, bert_init=True)</span>:</span></span><br><span class="line">    bert_config_file = self.bert_config_file</span><br><span class="line">    bert_config = BertConfig.from_json_file(bert_config_file)</span><br><span class="line">    batch_size, max_seq_length = get_shape_list(self.input_ids)</span><br><span class="line">    <span class="comment"># bert_mask = tf.pad(self.input_x_mask, [[0, 0], [2, 0]], constant_values=1)</span></span><br><span class="line">    bert_mask = self.input_mask</span><br><span class="line">    model = BertModel(</span><br><span class="line">        config=bert_config,</span><br><span class="line">        is_training=self.is_training,</span><br><span class="line">        input_ids=self.input_ids,</span><br><span class="line">        input_mask=bert_mask,</span><br><span class="line">        token_type_ids=self.token_type_ids,</span><br><span class="line">        use_one_hot_embeddings=<span class="keyword">False</span>)</span><br><span class="line"></span><br><span class="line">    layer_logits = []</span><br><span class="line">    <span class="keyword">for</span> i, layer <span class="keyword">in</span> enumerate(model.all_encoder_layers):</span><br><span class="line">        layer_logits.append(</span><br><span class="line">            tf.layers.dense(</span><br><span class="line">                layer, <span class="number">1</span>,</span><br><span class="line">                kernel_initializer=tf.truncated_normal_initializer(stddev=<span class="number">0.02</span>),</span><br><span class="line">                kernel_regularizer=tf.contrib.layers.l2_regularizer(self.l2_lambda),</span><br><span class="line">                name=<span class="string">"layer_logit%d"</span> % i</span><br><span class="line">            ) / np.sqrt(<span class="number">768</span>)</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">    layer_logits = tf.concat(layer_logits, axis=<span class="number">2</span>)</span><br><span class="line">    <span class="comment"># add /sqrt(dim)</span></span><br><span class="line">    <span class="comment"># layer_logits = tf.multiply(layer_logits, 1.0/ math.sqrt(768))</span></span><br><span class="line">    layer_dist = tf.nn.softmax(layer_logits)</span><br><span class="line">    seq_out = tf.concat([tf.expand_dims(x, axis=<span class="number">2</span>) <span class="keyword">for</span> x <span class="keyword">in</span> model.all_encoder_layers], axis=<span class="number">2</span>)</span><br><span class="line">    pooled_output = tf.matmul(tf.expand_dims(layer_dist, axis=<span class="number">2</span>), seq_out)</span><br><span class="line">    pooled_output = tf.squeeze(pooled_output, axis=<span class="number">2</span>)</span><br><span class="line">    pooled_layer = pooled_output</span><br><span class="line">    <span class="comment"># char_bert_outputs = pooled_layer[:, 1: max_seq_length - 1, :]</span></span><br><span class="line">    char_bert_outputs = pooled_layer[:, :, :]</span><br><span class="line"></span><br><span class="line">    final_hidden_states = char_bert_outputs</span><br><span class="line">    <span class="comment"># final_hidden_states = model.all_encoder_layers[-1]</span></span><br><span class="line">    tvars = tf.trainable_variables()</span><br><span class="line">    init_checkpoint = self.bert_init_checkpoint</span><br><span class="line">    assignment_map, initialized_variable_names = get_assignment_map_from_checkpoint(tvars, init_checkpoint)</span><br><span class="line">    <span class="keyword">if</span> bert_init:</span><br><span class="line">        tf.train.init_from_checkpoint(init_checkpoint, assignment_map)</span><br><span class="line"></span><br><span class="line">    tf.logging.info(<span class="string">"**** Trainable Variables ****"</span>)</span><br><span class="line">    <span class="keyword">for</span> var <span class="keyword">in</span> tvars:</span><br><span class="line">        init_string = <span class="string">""</span></span><br><span class="line">        <span class="keyword">if</span> var.name <span class="keyword">in</span> initialized_variable_names:</span><br><span class="line">            init_string = <span class="string">", *INIT_FROM_CKPT*"</span></span><br><span class="line">        <span class="comment"># tf.logging.info("  name = %s, shape = %s%s", var.name, var.shape, init_string)</span></span><br><span class="line">        print(<span class="string">"  name = %s, shape = %s%s"</span>, var.name, var.shape, init_string)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> final_hidden_states</span><br></pre></td></tr></table></figure>
+
+
+
+</details>
+
+<h2 id="2-BERT-CNN文本分类"><a href="#2-BERT-CNN文本分类" class="headerlink" title="2. BERT-CNN文本分类"></a>2. BERT-CNN文本分类</h2><p>在勘探院任务中，除了上述的bert-dnn结构，还魔改了一个bert-cnn结构。简单来说是在获取句子表示后不直接接入全连接层，而是接入[3,4,5]的卷积层提取特征并预测，这部分结构与论文textcnn完全一致，故不赘述。</p>
+<p>然而，<strong>最终的效果并没有提升</strong>，猜测的原因是bert emb后的向量本身就能够表示文本特征，这与word2vec+cnn提取特征的流程是类似的，因此在提取的特征上再用cnn提取反而将事情变得复杂，造成结果不佳。</p>
+<ul>
+<li>bert-dnn<ul>
+<li>avg_f1:  0.38006882359742533</li>
+<li>avg_f1_old:  0.41719368479128643</li>
+<li>avg_精细油藏描述_f1:  0.4313315639006726</li>
+</ul>
+</li>
+<li>bert-cnn<ul>
+<li>avg_f1:  0.34315815627817314</li>
+<li>avg_f1_old:  0.38315118709007473</li>
+<li>avg_精细油藏描述_f1:  0.42514119487594343</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>上述实验记录在：<a href="https://gitlab.gridsum.com/zhuyuanqing/publicworktoolbox/-/issues/86" target="_blank" rel="noopener">https://gitlab.gridsum.com/zhuyuanqing/publicworktoolbox/-/issues/86</a> </p>
+</blockquote>
+<hr>
+<p><em>textcnn</em>模型结构简单而有效，在很多项目中如果资源不够，可以优先考虑。例如在<strong>冀北电网智能工单</strong>项目中的工单分类任务中，客户要求对20多种类别的工单进行分类，每种类别下分别有多个标签，因此需要交付20多个模型文件完成。</p>
+<p><img src="/2023/03/01/PLM瞎扯/3.png" alt="image"></p>
+<p>然而由于能够提供的硬件环境和对方要求的响应时间要求，导致难以选用较重模型，在多次尝试后决定选用text-cnn模型完成交付，最终方案是textcnn+flask+gunicorn用docker封装，响应速度较快，占用资源较少。</p>
+<h2 id="3-BERT-DNN-pytorch"><a href="#3-BERT-DNN-pytorch" class="headerlink" title="3. BERT-DNN-pytorch"></a>3. BERT-DNN-pytorch</h2><p>以上两部分内容均是tensorflow1.15版本的代码，后逐渐转为pytorch。</p>
+<p>对于pytorch来说使用bert更为方便（当然其实tf也很方便），这里简述一下大名鼎鼎的huggingface维护的<code>transformers</code>。用其中的<code>transformers.BertForSequenceClassification</code>即可实现一个最简单的分类模型。</p>
+<p>BERT的文档地址为：<a href="https://huggingface.co/transformers/v1.2.0/model_doc/bert.html" target="_blank" rel="noopener">https://huggingface.co/transformers/v1.2.0/model_doc/bert.html</a> </p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sequence_output = self.bert(input_ids=input_ids, token_type_ids=token_type_ids,attention_mask=attention_mask, output_hidden_states=<span class="keyword">True</span>)[<span class="number">0</span>]</span><br><span class="line">first_token_tensor = torch.squeeze(sequence_output[:, <span class="number">0</span>:<span class="number">1</span>, :], dim=<span class="number">1</span>).cuda()</span><br></pre></td></tr></table></figure>
+<h2 id="4-DistilBERT"><a href="#4-DistilBERT" class="headerlink" title="4. DistilBERT"></a>4. DistilBERT</h2><p>前面提到对于某些项目BERT难以符合一些严苛要求，这时候就可以考虑魔改一些东西。这里罗列两个不是非常符合常规做法的魔改方法。</p>
+<h3 id="1-在bert初始化时对config-json进行修改，减少要使用的bert参数量"><a href="#1-在bert初始化时对config-json进行修改，减少要使用的bert参数量" class="headerlink" title="1. 在bert初始化时对config.json进行修改，减少要使用的bert参数量"></a>1. 在bert初始化时对config.json进行修改，减少要使用的bert参数量</h3><p>具体来说，需要在bert init过程传入<code>bert_config</code>或者修改本地的<code>config.json</code>文件，例如：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"attention_probs_dropout_prob"</span>: <span class="number">0.1</span>, </span><br><span class="line">  <span class="attr">"directionality"</span>: <span class="string">"bidi"</span>, </span><br><span class="line">  <span class="attr">"hidden_act"</span>: <span class="string">"gelu"</span>, </span><br><span class="line">  <span class="attr">"hidden_dropout_prob"</span>: <span class="number">0.1</span>, </span><br><span class="line">  <span class="attr">"hidden_size"</span>: <span class="number">768</span>, </span><br><span class="line">  <span class="attr">"initializer_range"</span>: <span class="number">0.02</span>, </span><br><span class="line">  <span class="attr">"intermediate_size"</span>: <span class="number">3072</span>, </span><br><span class="line">  <span class="attr">"max_position_embeddings"</span>: <span class="number">512</span>, </span><br><span class="line">  <span class="attr">"num_attention_heads"</span>: <span class="number">3</span>, </span><br><span class="line">  <span class="attr">"num_hidden_layers"</span>: <span class="number">3</span>, </span><br><span class="line">  <span class="attr">"pooler_fc_size"</span>: <span class="number">768</span>, </span><br><span class="line">  <span class="attr">"pooler_num_attention_heads"</span>: <span class="number">12</span>, </span><br><span class="line">  <span class="attr">"pooler_num_fc_layers"</span>: <span class="number">3</span>, </span><br><span class="line">  <span class="attr">"pooler_size_per_head"</span>: <span class="number">128</span>, </span><br><span class="line">  <span class="attr">"pooler_type"</span>: <span class="string">"first_token_transform"</span>, </span><br><span class="line">  <span class="attr">"type_vocab_size"</span>: <span class="number">2</span>, </span><br><span class="line">  <span class="attr">"vocab_size"</span>: <span class="number">21128</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里将<code>num_hidden_layers</code>和<code>num_attention_heads</code>进行了修改，再训练出的模型就会占用空间少，但通常来说<strong>效果也会变差</strong>，这需要具体问题具体分析，在效果和性能取得平衡。</p>
+<h3 id="2-模型蒸馏"><a href="#2-模型蒸馏" class="headerlink" title="2. 模型蒸馏"></a>2. 模型蒸馏</h3><p>对于<code>teacher</code>模型，我在代码中返回的是<code>return loss, dense_2_with_softmax, dense_2_output</code>，其中<code>dense_2_output</code>即为logits，这个<strong>后面会用到</strong>。</p>
+<p>对于<code>student</code>模型，与<code>teacher</code>的模型结构基本上完全一样，但是在<code>bert_config</code>里面有不同的设置，我在这里将<code>num_attention_heads</code>设置为3，将<code>num_hidden_layers</code>分别设置成1和3进行了尝试。</p>
+<p>训练部分有用部分如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">model = torch.load(<span class="string">"/data/zhuyuanqing/static_MODEL/event_extract/sentence_classify_daneng_teacher/fold_0/model_epoch_23_p_1.0000_r_1.0000_f_1.0000.pt"</span>)</span><br><span class="line">student_model = Student(args.bert_model_toy, args.label_num)</span><br></pre></td></tr></table></figure>
+<p>这里<code>model</code>即为teacher，是直接从训练好的模型加载的，故设为<code>*.eval()</code>。</p>
+<p>在<code>do_train</code>的训练过程中，对于每个batch数据，进行：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">with</span> torch.no_grad():</span><br><span class="line">    _, teacher_output_with_softmax, teacher_output = model(input_ids, segment_ids, input_mask, label_ids)</span><br><span class="line"></span><br><span class="line">student_output, student_output_with_softmax = student_model(input_ids, segment_ids, input_mask, label_ids)</span><br></pre></td></tr></table></figure>
+<p>后面会用到<code>student_output</code>和<code>teacher_output</code>，实际上就是student去学习teacher的分布，对于论文比较常见的是：</p>
+<p><img src="/2023/03/01/PLM瞎扯/4.png" alt="image"></p>
+<p>在当前的实验中是摘抄了这段代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">distillation</span><span class="params">(y, teacher_scores, labels, T, alpha)</span>:</span></span><br><span class="line">    p = F.log_softmax(y/T, dim=<span class="number">1</span>)</span><br><span class="line">    q = F.softmax(teacher_scores/T, dim=<span class="number">1</span>)</span><br><span class="line">    l_kl = F.kl_div(p, q, size_average=<span class="keyword">False</span>) * (T**<span class="number">2</span>) / y.shape[<span class="number">0</span>]</span><br><span class="line">    l_ce = F.cross_entropy(y, labels)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> l_kl * alpha + l_ce * (<span class="number">1.</span> - alpha)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 调用</span></span><br><span class="line">loss = distillation(student_output, teacher_output, label_ids.long(), T, <span class="number">0.2</span>)</span><br></pre></td></tr></table></figure>
+<p>ps. 这个操作看起来有点像focal_loss的操作，可参考：<a href="https://zhuanlan.zhihu.com/p/49981234" target="_blank" rel="noopener">知乎：Focal loss论文详解</a></p>
+<p><code>optimizer</code>也是用了两种进行尝试，分别是</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 第一种方法：teacher model即用的这个</span></span><br><span class="line">param_optimizer = list(student_model.named_parameters())</span><br><span class="line">no_decay = [<span class="string">'bias'</span>, <span class="string">'LayerNorm.weight'</span>]</span><br><span class="line">optimizer_grouped_parameters = [</span><br><span class="line">        &#123;<span class="string">'params'</span>: [p <span class="keyword">for</span> n, p <span class="keyword">in</span> param_optimizer <span class="keyword">if</span> <span class="keyword">not</span> any(nd <span class="keyword">in</span> n <span class="keyword">for</span> nd <span class="keyword">in</span> no_decay)],</span><br><span class="line">         <span class="string">'weight_decay'</span>: args.weight_decay&#125;,</span><br><span class="line">        &#123;<span class="string">'params'</span>: [p <span class="keyword">for</span> n, p <span class="keyword">in</span> param_optimizer <span class="keyword">if</span> any(nd <span class="keyword">in</span> n <span class="keyword">for</span> nd <span class="keyword">in</span> no_decay)], <span class="string">'weight_decay'</span>: <span class="number">0.0</span>&#125;</span><br><span class="line">]</span><br><span class="line">warmup_steps = int(args.warmup_proportion * num_train_optimization_steps)</span><br><span class="line">optimizer = AdamW(optimizer_grouped_parameters, lr=args.learning_rate, eps=args.adam_epsilon)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 第二种方法：从网上直接粘贴过来的</span></span><br><span class="line">optimizer = torch.optim.SGD(student_model.parameters(), lr=<span class="number">0.05</span>)</span><br></pre></td></tr></table></figure>
+<p>选择了一份内容营销业务数据进行了简单测试，结果如下：</p>
+<p>teacher-student结果</p>
+<h5 id="teacher-dev"><a href="#teacher-dev" class="headerlink" title="teacher-dev"></a>teacher-dev</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">              precision    recall  f1-score   support</span><br><span class="line"></span><br><span class="line">          测评     0.7800    0.7800    0.7800        50</span><br><span class="line">          种草     0.8856    0.8754    0.8805       345</span><br><span class="line">          科普     0.6636    0.6887    0.6759       106</span><br><span class="line"></span><br><span class="line">    accuracy                         0.8263       501</span><br><span class="line">   macro avg     0.7764    0.7813    0.7788       501   &lt;</span><br><span class="line">weighted avg     0.8281    0.8263    0.8272       501</span><br></pre></td></tr></table></figure>
+<h5 id="student-dev"><a href="#student-dev" class="headerlink" title="student-dev"></a>student-dev</h5><h6 id="bert-layer-1"><a href="#bert-layer-1" class="headerlink" title="bert-layer-1"></a>bert-layer-1</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">epoch 9</span><br><span class="line">              precision    recall  f1-score   support</span><br><span class="line"></span><br><span class="line">    accuracy                         0.6886       501</span><br><span class="line">   macro avg     0.2295    0.3333    0.2719       501</span><br><span class="line">weighted avg     0.4742    0.6886    0.5616       501</span><br><span class="line"></span><br><span class="line">epoch 19</span><br><span class="line">              precision    recall  f1-score   support</span><br><span class="line"></span><br><span class="line">    accuracy                         0.7265       501</span><br><span class="line">   macro avg     0.6689    0.6261    0.6331       501</span><br><span class="line">weighted avg     0.7444    0.7265    0.7295       501</span><br><span class="line"></span><br><span class="line">epoch 29</span><br><span class="line">              precision    recall  f1-score   support</span><br><span class="line"></span><br><span class="line">    accuracy                         0.7106       501</span><br><span class="line">   macro avg     0.6198    0.5992    0.6067       501</span><br><span class="line">weighted avg     0.7152    0.7106    0.7118       501</span><br><span class="line"></span><br><span class="line">epoch 38</span><br><span class="line">              precision    recall  f1-score   support</span><br><span class="line"></span><br><span class="line">    accuracy                         0.7146       501</span><br><span class="line">   macro avg     0.6200    0.5898    0.6007       501</span><br><span class="line">weighted avg     0.7161    0.7146    0.7139       501</span><br><span class="line"></span><br><span class="line">epoch 49</span><br><span class="line">              precision    recall  f1-score   support</span><br><span class="line"></span><br><span class="line">    accuracy                         0.7146       501</span><br><span class="line">   macro avg     0.6451    0.6156    0.6243       501   &lt;</span><br><span class="line">weighted avg     0.7269    0.7146    0.7182       501</span><br></pre></td></tr></table></figure>
+<h6 id="bert-layer3"><a href="#bert-layer3" class="headerlink" title="bert-layer3"></a>bert-layer3</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">epoch 9</span><br><span class="line">              precision    recall  f1-score   support</span><br><span class="line"></span><br><span class="line">    accuracy                         0.7605       501</span><br><span class="line">   macro avg     0.7092    0.6881    0.6920       501</span><br><span class="line">weighted avg     0.7782    0.7605    0.7659       501</span><br><span class="line"></span><br><span class="line">epoch 19</span><br><span class="line">              precision    recall  f1-score   support</span><br><span class="line"></span><br><span class="line">    accuracy                         0.7764       501</span><br><span class="line">   macro avg     0.7030    0.7069    0.7049       501   &lt;</span><br><span class="line">weighted avg     0.7787    0.7764    0.7775       501</span><br><span class="line"></span><br><span class="line">epoch 29</span><br><span class="line">              precision    recall  f1-score   support</span><br><span class="line"></span><br><span class="line">    accuracy                         0.7764       501</span><br><span class="line">   macro avg     0.6991    0.6977    0.6981       501</span><br><span class="line">weighted avg     0.7791    0.7764    0.7776       501</span><br></pre></td></tr></table></figure>
+<h6 id="bert-layer3-1"><a href="#bert-layer3-1" class="headerlink" title="bert-layer3"></a>bert-layer3</h6><p>修改<code>optimizer</code>为：<code>torch.optim.SGD(student_model.parameters(), lr=0.05)</code> → <code>AdamW(optimizer_grouped_parameters, lr=args.learning_rate, eps=args.adam_epsilon)</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">epoch 9</span><br><span class="line">              precision    recall  f1-score   support</span><br><span class="line"></span><br><span class="line">    accuracy                         0.7685       501</span><br><span class="line">   macro avg     0.6756    0.6662    0.6690       501</span><br><span class="line">weighted avg     0.7734    0.7685    0.7701       501</span><br><span class="line"></span><br><span class="line">epoch 19</span><br><span class="line">              precision    recall  f1-score   support</span><br><span class="line"></span><br><span class="line">    accuracy                         0.8064       501</span><br><span class="line">   macro avg     0.7360    0.7261    0.7295       501   &lt;</span><br><span class="line">weighted avg     0.8106    0.8064    0.8078       501</span><br><span class="line"></span><br><span class="line">epoch 29</span><br><span class="line">              precision    recall  f1-score   support</span><br><span class="line"></span><br><span class="line">    accuracy                         0.7784       501</span><br><span class="line">   macro avg     0.7089    0.6968    0.6998       501</span><br><span class="line">weighted avg     0.7870    0.7784    0.7812       501</span><br></pre></td></tr></table></figure>
+<p>bert-layer-3(SGD)</p>
+<p><img src="/2023/03/01/PLM瞎扯/5.png" alt="bert_layer_3"></p>
+<p>bert-layer-3(Adamw)</p>
+<p><img src="/2023/03/01/PLM瞎扯/6.png" alt="bert_layer_3_optimizer"></p>
+<p>通过上述实验得到的的结论：</p>
+<ul>
+<li>1层的layer没有3层的好使（废话</li>
+<li><code>SGD</code>和<code>AdamW</code>没感觉到特别特别明显差异，先当作炼丹问题 | update：看下图的话感觉SGD相对更稳定一些</li>
+<li>两个loss得权重比例和Temperature取值也很玄学，可炼</li>
+<li>目前student部分不够完善</li>
+<li>如果teacher结果好，1层的student表现还行；如果teacher表现不是非常理想，那student如果结构弱也比较吃亏</li>
+</ul>
+<h2 id="5-NER"><a href="#5-NER" class="headerlink" title="5. NER"></a>5. NER</h2><p>对于命名实体识别任务，在NLP领域可以归纳为序列标注任务，常见的方法有lstm+crf/pointer等等，这里想提到的就是<code>transformers.BertForTokenClassification</code>方法，它将NER任务直接考虑为在字粒度的分类任务，在很多时候可以作为baseline方法对任务有个大概摸底。</p>
+<p>在冀北电网智能工单项目中，有一个需求是对文档进行知识点的抽取，从而构建知识点图谱，这里知识点是一段文本中的几句话或者几个关键词语。因此这里NER模型就被当作了一个知识点抽取模型来使用，而不仅仅局限在对 <strong>“实体”</strong> 的抽取。</p>
+<p>该模型还在另一个任务中有所使用，这里一并列举以便参考：</p>
+<p>在NL2SQL模型中，模型生成的SQL语句是不带value的(原因：作者实验发现如果同步抽取value会导致SQL组件的准确率降低)，例如：<code>SELECT 发电厂基本信息.电子邮箱 FROM 发电厂基本信息 WHERE 发电厂基本信息.发电厂名称 = &#39;terminal&#39;</code>，这个问题其实容易通过后处理解决。</p>
+<p>由于SQL语句中的value通常出现在Question中，那么这个问题就转化为根据列名去Question文本中找到对应内容的问题。</p>
+<p>因此可以构建输入：Question+ColumnName，输出为列名对应value，训练模型即可实现对<code>terminal</code>的替换。</p>
+<h1 id="T5"><a href="#T5" class="headerlink" title="T5"></a>T5</h1><h2 id="1-t5-pegasus"><a href="#1-t5-pegasus" class="headerlink" title="1. t5_pegasus"></a>1. t5_pegasus</h2><p>原始链接：<a href="https://kexue.fm/archives/8209" target="_blank" rel="noopener">T5 PEGASUS：开源一个中文生成式预训练模型</a></p>
+<ol>
+<li><p>tokenizer的优化。mt5词表有二十余万的词语及embedding，但中文只占其中一部分，因此对此进行了优化。从jieba词表的前20w个高频词中，选取了在预训练语料中出现频次最高的5w个词，并将其作为词表vocab.txt。</p>
+</li>
+<li><p>借鉴了PEGASUS的思想，其思想为将mask的级别拓展到句子，即对于一篇文章，通过一些策略mask掉一些句子，然后用剩余的句子来预测被mask的句子的内容。</p>
+<blockquote>
+<p>假设一个文档有n个句子，我们从中挑出大约n/4个句子（可以不连续），使得这n/4个句子拼起来的文本，跟剩下的3n/4个句子拼起来的文本，最长公共子序列尽可能长，然后我们将3n/4个句子拼起来的文本视为原文，n/4个句子拼起来的文本视为摘要，这样就构成了一个“(原文, 摘要)”的伪摘要数据对了，就用这些数据对去训练Seq2Seq模型即可。</p>
+</blockquote>
+</li>
+</ol>
+<p>目前，NLP能力平台的文本摘要服务对keras版本进行了封装，能够支持<strong>训练</strong>和<strong>预测</strong>，在milestone2中根据苏神博客<a href="https://kexue.fm/archives/7947" target="_blank" rel="noopener">层次分解位置编码，让BERT可以处理超长文本</a>对t5-pegasus进行了修改，也能支持长文本的训练和预测。但由于长文本摘要数据集较少，并且长度增加后效果↓，建议此功能仅作体验。</p>
+<p>考虑到公司技术栈以pytorch为主，因此后续工作考虑将keras版本代码修改为torch版本。</p>
+<ul>
+<li>milestone2接口文档：略 </li>
+<li>backend地址：略</li>
+</ul>
+<h2 id="2-transformers-MT5ForConditionalGeneration"><a href="#2-transformers-MT5ForConditionalGeneration" class="headerlink" title="2. transformers.MT5ForConditionalGeneration"></a>2. transformers.MT5ForConditionalGeneration</h2><p>相比于上述方法，我们也可以调用transformers包的MT5ForConditionalGeneration方法完成摘要模型的训练，其代码更加简单。</p>
+<p>具体来说，对于输入的文本-摘要（text-summary）有：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">tokenizer = T5Tokenizer.from_pretrained(<span class="string">"google/mt5-small"</span>)</span><br><span class="line">text_encoded_dict = tokenizer.encode_plus(</span><br><span class="line">    text,  <span class="comment"># document to encode.</span></span><br><span class="line">    add_special_tokens=<span class="keyword">True</span>,  <span class="comment"># add tokens relative to model</span></span><br><span class="line">    max_length=max_seq_length,  <span class="comment"># set max length</span></span><br><span class="line">    truncation=<span class="keyword">True</span>,  <span class="comment"># truncate longer messages</span></span><br><span class="line">    pad_to_max_length=<span class="keyword">True</span>,  <span class="comment"># add padding</span></span><br><span class="line">    return_attention_mask=<span class="keyword">True</span>,  <span class="comment"># create attn. masks</span></span><br><span class="line">    return_tensors=<span class="string">'pt'</span>  <span class="comment"># return pytorch tensors</span></span><br><span class="line">)</span><br><span class="line">summary_encoded_dict = tokenizer.encode_plus(</span><br><span class="line">    summary,  <span class="comment"># document to encode.</span></span><br><span class="line">    add_special_tokens=<span class="keyword">True</span>,  <span class="comment"># add tokens relative to model</span></span><br><span class="line">    max_length=max_seq_length,  <span class="comment"># set max length</span></span><br><span class="line">    truncation=<span class="keyword">True</span>,  <span class="comment"># truncate longer messages</span></span><br><span class="line">    pad_to_max_length=<span class="keyword">True</span>,  <span class="comment"># add padding</span></span><br><span class="line">    return_attention_mask=<span class="keyword">True</span>,  <span class="comment"># create attn. masks</span></span><br><span class="line">    return_tensors=<span class="string">'pt'</span>  <span class="comment"># return pytorch tensors</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>模型的训练：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">model = MT5ForConditionalGeneration.from_pretrained(<span class="string">"google/mt5-small"</span>)</span><br><span class="line">outputs = model(</span><br><span class="line">    input_ids=text_input_ids, </span><br><span class="line">    attention_mask=text_att_mask,</span><br><span class="line">    labels=summary_input_ids,</span><br><span class="line">    decoder_attention_mask=summary_att_mask</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>预测则调用<code>model.generate</code>即可：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">with</span> torch.no_grad():</span><br><span class="line">    outputs = model.generate(text_input_ids)</span><br><span class="line">    pred = []</span><br><span class="line">    <span class="keyword">for</span> pp <span class="keyword">in</span> outputs:</span><br><span class="line">        pp_ = tokenizer.decode(pp, skip_special_tokens=<span class="keyword">True</span>)</span><br><span class="line">        pred.append(pp_)</span><br></pre></td></tr></table></figure>
+<p>在使用MT5ForConditionalGeneration过程中，在公司DL服务器上需要约束batch_size=1，max_seq_length=512能够跑起<code>mt5-small</code>，换成<code>mt5-base</code>会导致资源不够出错。</p>
+<h3 id="文本摘要结果评测"><a href="#文本摘要结果评测" class="headerlink" title="文本摘要结果评测"></a>文本摘要结果评测</h3><h3 id="方案1：-textrank"><a href="#方案1：-textrank" class="headerlink" title="方案1： textrank"></a>方案1： textrank</h3><h4 id="LCSTS数据集"><a href="#LCSTS数据集" class="headerlink" title="LCSTS数据集"></a>LCSTS数据集</h4><ol>
+<li>dev-20000：<code>{&#39;rouge-1&#39;: 0.270134366932949, &#39;rouge-2&#39;: 0.139016937291353, &#39;rouge-l&#39;: 0.2321998077627686, &#39;bleu&#39;: 0.06403468343830841}</code></li>
+<li>dev-全量-108915：<code>{&#39;rouge-1&#39;: 0.2686800362783573, &#39;rouge-2&#39;: 0.13793584256140828, &#39;rouge-l&#39;: 0.23100455741973097, &#39;bleu&#39;: 0.06322491915268577}</code></li>
+</ol>
+<h4 id="NLPCC数据集"><a href="#NLPCC数据集" class="headerlink" title="NLPCC数据集"></a>NLPCC数据集</h4><ol>
+<li>dev-全量-10000：<code>{&#39;rouge-1&#39;: 0.35543741211050656, &#39;rouge-2&#39;: 0.1890605775087208, &#39;rouge-l&#39;: 0.2830505612239267, &#39;bleu&#39;: 0.11451371060883851}</code></li>
+</ol>
+<h3 id="方案2：t5-mt5"><a href="#方案2：t5-mt5" class="headerlink" title="方案2：t5/mt5"></a>方案2：t5/mt5</h3><h4 id="LCSTS数据集-1"><a href="#LCSTS数据集-1" class="headerlink" title="LCSTS数据集"></a>LCSTS数据集</h4><ol>
+<li>train-20000，dev-20000：<code>{&#39;rouge-1&#39;: 0.3439869141909578, &#39;rouge-2&#39;: 0.20868820633717347, &#39;rouge-l&#39;: 0.31631151248246936, &#39;bleu&#39;: 0.11917552701595575}</code></li>
+<li>train-500000, dev-20000：<code>{&#39;rouge-1&#39;: 0.3876713112544026, &#39;rouge-2&#39;: 0.24454193676703398, &#39;rouge-l&#39;: 0.35648754834527996, &#39;bleu&#39;: 0.14983122744892452}</code></li>
+<li>train-1000000, dev-20000：<code>{&#39;rouge-1&#39;: 0.3972087215770807, &#39;rouge-2&#39;: 0.25194091382794775, &#39;rouge-l&#39;: 0.36479877982787084, &#39;bleu&#39;: 0.15722252621576416}</code></li>
+</ol>
+<h3 id="方案3：t5-pegasus"><a href="#方案3：t5-pegasus" class="headerlink" title="方案3：t5-pegasus"></a>方案3：t5-pegasus</h3><h4 id="LCSTS数据集-2"><a href="#LCSTS数据集-2" class="headerlink" title="LCSTS数据集"></a>LCSTS数据集</h4><ol>
+<li>train-20000，dev-20000：<code>{&#39;rouge-1&#39;: 0.34544668882236546, &#39;rouge-2&#39;: 0.2003219803166334, &#39;rouge-l&#39;: 0.31674299284684254, &#39;bleu&#39;: 0.11230459933637414}</code></li>
+<li>train-500000, dev-20000：<code>{&#39;rouge-1&#39;: 0.3779512820266609, &#39;rouge-2&#39;: 0.22554697558542244, &#39;rouge-l&#39;: 0.3471512882173606, &#39;bleu&#39;: 0.13239432252520852}</code>(<strong>尚未完成训练，此为epoch5的指标</strong>)</li>
+<li>train-1000000, dev-20000：<code>{&#39;rouge-1&#39;: 0.38598133347041713, &#39;rouge-2&#39;: 0.23048499632522085, &#39;rouge-l&#39;: 0.35434723315572103, &#39;bleu&#39;: 0.13600921010698191}</code>(<strong>尚未完成训练，此为epoch3的指标</strong>)</li>
+</ol>
+<h2 id="3-mt5文本分类"><a href="#3-mt5文本分类" class="headerlink" title="3. mt5文本分类"></a>3. mt5文本分类</h2><p>T5天然适合做文本生成类任务，但是考虑到它又新又大，也可以魔改一下让它来做分类任务，提供思路如下：</p>
+<ol>
+<li>利用<code>transformers.MT5EncoderModel</code>获取文本表示，单纯地替换bert作用</li>
+<li>还是利用<code>MT5ForConditionalGeneration</code>，将标签当作待生成的文本，将分类任务当作seq2seq来做。这种方式对于多标签分类或者层次分类任务是值得尝试的一种方法。</li>
+</ol>
+<p>ps. 在MT5EncoderModel实验中可以跑起mt5-base</p>
+<h2 id="4-其他用到t5的模型"><a href="#4-其他用到t5的模型" class="headerlink" title="4. 其他用到t5的模型"></a>4. 其他用到t5的模型</h2><blockquote>
+<p>Autoregressive Structured Prediction with Language Models</p>
+</blockquote>
+<p>项目地址：<a href="https://github.com/lyutyuh/ASP" target="_blank" rel="noopener">https://github.com/lyutyuh/ASP</a></p>
+<p>该项目提供的代码实现了三项任务：命名实体识别、指代消解、实体关系抽取</p>
+<p>根据之前的实验，命名实体识别、指代消解任务在更换为mt5和中文数据集后都达到了正常水平，实体关系抽取尚存在一些问题。</p>
+<p>命名实体识别：Step 33000: evaluating on 1343 samples with batch_size 32</p>
+<ul>
+<li>Eval_Ent_Precision: 74.3627</li>
+<li>Eval_Ent_Recall: 66.4714</li>
+<li>Eval_Ent_F1: 70.1959</li>
+</ul>
+<p>指代消解：evaluating on 385 samples with batch_size 1</p>
+<ul>
+<li>Eval_Avg_Precision: 64.9949</li>
+<li>Eval_Avg_Recall: 60.5930</li>
+<li>Eval_Avg_F1: 62.6821</li>
+<li>Eval_Mention_Recall: 74.4342</li>
+<li>muc_f1: 0.6883</li>
+<li>muc_p: 0.7077</li>
+<li>muc_r: 0.6699</li>
+<li>b_cubed_f1: 0.6207</li>
+<li>b_cubed_p: 0.6282</li>
+<li>b_cubed_r: 0.6134</li>
+<li>ceafe_f1: 0.5714</li>
+<li>ceafe_p: 0.6139</li>
+<li>ceafe_r: 0.5345</li>
+</ul>
+<p>实体关系抽取：evaluating on 2000 samples with batch_size 8</p>
+<ul>
+<li>Eval_Ent_Precision: 68.3107</li>
+<li>Eval_Ent_Recall: 67.6750</li>
+<li>Eval_Ent_F1: 67.9914</li>
+<li>Eval_Rel_Precision: 57.2822</li>
+<li>Eval_Rel_Recall: 48.2740</li>
+<li>Eval_Rel_F1: 52.3937</li>
+<li>Eval_Rel_p_Precision: 35.8257</li>
+<li>Eval_Rel_p_Recall: 30.</li>
+</ul>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/NLP/">NLP</a><a href="/tags/深度学习/">深度学习</a>
+  </div>
+
+</div>
+
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2023/08/01/skill_record/" title="一些开发工具的使用随手记">
+  <span>
+  一些开发工具的使用随手记</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2022/08/25/from-pretrained-try/" title="【随手记】一些关于from_pretrained的踩坑">
+ <span>【随手记】一些关于from_pretrained的踩坑
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+<div id="authorInfo">
+	
+		<div class="author-img"></div>		
+	
+	<div class="social-info">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:candnes@sina.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+
+	</div>
+</div>
+
+  
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/NLP/" title="NLP">NLP<sup>17</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Coreference-Resolution/" title="Coreference Resolution">Coreference Resolution<sup>8</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/NL2SQL/" title="NL2SQL">NL2SQL<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/踩坑/" title="踩坑">踩坑<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/学习/" title="学习">学习<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/GNN/" title="GNN">GNN<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/多模态/" title="多模态">多模态<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/爬虫/" title="爬虫">爬虫<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Algorithm/" title="Algorithm">Algorithm<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/python/" title="python">python<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/深度学习/" title="深度学习">深度学习<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+		
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/hsihohuang/kiddochan" target="_blank" title="Kiddochan">Kiddochan</a> © 2023 
+		
+		<a href="/about" target="_blank" title="Yuanqing Zhu">Yuanqing Zhu</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

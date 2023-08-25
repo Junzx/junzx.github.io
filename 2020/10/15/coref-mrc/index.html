@@ -1,0 +1,549 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  
+    <title>【Coref】Formulating Different NLP Tasks under the MRC Framework | Blog of YQ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Yuanqing Zhu">
+    
+
+    
+    <meta name="description" content="本篇其实是NLPCC2020.10.15讲习班的内容，因为涉及coref就单独拿出来了">
+<meta name="keywords" content="Coreference Resolution,NLP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【Coref】Formulating Different NLP Tasks under the MRC Framework">
+<meta property="og:url" content="http://yoursite.com/2020/10/15/coref-mrc/index.html">
+<meta property="og:site_name" content="Blog of YQ">
+<meta property="og:description" content="本篇其实是NLPCC2020.10.15讲习班的内容，因为涉及coref就单独拿出来了">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2020/10/15/coref-mrc/r1.png">
+<meta property="og:image" content="http://yoursite.com/2020/10/15/coref-mrc/r2.png">
+<meta property="og:image" content="http://yoursite.com/2020/10/15/coref-mrc/r3.png">
+<meta property="og:image" content="http://yoursite.com/2020/10/15/coref-mrc/r4.png">
+<meta property="og:image" content="http://yoursite.com/2020/10/15/coref-mrc/r5.png">
+<meta property="og:image" content="http://yoursite.com/2020/10/15/coref-mrc/r6.png">
+<meta property="og:image" content="http://yoursite.com/2020/10/15/coref-mrc/r7.png">
+<meta property="og:image" content="http://yoursite.com/2020/10/15/coref-mrc/r8.png">
+<meta property="og:image" content="http://yoursite.com/2020/10/15/coref-mrc/r9.png">
+<meta property="og:image" content="http://yoursite.com/2020/10/15/coref-mrc/r10.png">
+<meta property="og:image" content="http://yoursite.com/2020/10/15/coref-mrc/r11.png">
+<meta property="og:image" content="http://yoursite.com/2020/10/15/coref-mrc/r12.png">
+<meta property="og:image" content="http://yoursite.com/2020/10/15/coref-mrc/r13.png">
+<meta property="og:image" content="http://yoursite.com/2020/10/15/coref-mrc/r18.png">
+<meta property="og:image" content="http://yoursite.com/2020/10/15/coref-mrc/r19.png">
+<meta property="og:image" content="http://yoursite.com/2020/10/15/coref-mrc/r14.png">
+<meta property="og:image" content="http://yoursite.com/2020/10/15/coref-mrc/r15.png">
+<meta property="og:image" content="http://yoursite.com/2020/10/15/coref-mrc/r16.png">
+<meta property="og:image" content="http://yoursite.com/2020/10/15/coref-mrc/r17.png">
+<meta property="og:updated_time" content="2023-08-24T09:24:54.383Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="【Coref】Formulating Different NLP Tasks under the MRC Framework">
+<meta name="twitter:description" content="本篇其实是NLPCC2020.10.15讲习班的内容，因为涉及coref就单独拿出来了">
+<meta name="twitter:image" content="http://yoursite.com/2020/10/15/coref-mrc/r1.png">
+
+    
+    <link rel="alternative" href="atom.xml" title="Blog of YQ" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/icon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="//img/IMG_8752.JPG">
+    <link rel="apple-touch-icon-precomposed" href="//img/IMG_8752.JPG">
+    
+    <link rel="stylesheet" href="/css/style.css"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+</html>
+  <body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><header>
+      
+<div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Blog of YQ">Blog of YQ</a></h1>
+				<h2 class="blog-motto">this is subtitle :)</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope="" itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2020/10/15/coref-mrc/" title="【Coref】Formulating Different NLP Tasks under the MRC Framework" itemprop="url">【Coref】Formulating Different NLP Tasks under the MRC Framework</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Yuanqing Zhu" target="_blank" itemprop="author">Yuanqing Zhu</a>
+		
+  </p><p class="article-time">
+    <time datetime="2020-10-14T16:00:00.000Z" itemprop="datePublished"> 发表于 2020-10-15</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<h1 id="10-15讲习班：Formulating-Different-NLP-Tasks-under-the-MRC-Framework"><a href="#10-15讲习班：Formulating-Different-NLP-Tasks-under-the-MRC-Framework" class="headerlink" title="10.15讲习班：Formulating Different NLP Tasks under the MRC Framework"></a>10.15讲习班：Formulating Different NLP Tasks under the MRC Framework</h1><p>本讲座主要讲解了如何利用MRC框架解决各种NLP任务，并在以下四个领域进行了尝试：</p>
+<ul>
+<li>NER(Paper: <a href="https://arxiv.org/pdf/1910.11476.pdf" target="_blank" rel="noopener">A Unified MRC Framework for Named Entity Recognition</a>)</li>
+<li>Relation Extraction(Paper: <a href="https://arxiv.org/pdf/1905.05529.pdf" target="_blank" rel="noopener">Entity-Relation Extraction as Multi-turn Question Answering</a>)</li>
+<li>Coreference Resolution(Paper: <a href="https://www.aclweb.org/anthology/2020.acl-main.622.pdf" target="_blank" rel="noopener">CorefQA: Coreference Resolution as Query-based Span Prediction</a>)</li>
+<li>Text Classification(Paper: <a href="https://arxiv.org/pdf/2002.03067.pdf" target="_blank" rel="noopener">Description Based Text Classification with Reinforcement Learning</a>)</li>
+</ul>
+<p><strong>MRC，即Machine Reading Comprehension，机器阅读理解</strong>。是指给定一篇文章以及基于文章的一些问题，让机器再根据文章内容进行回答，从而完成阅读理解的任务。例如：</p>
+<p><img src="/2020/10/15/coref-mrc/r1.png" alt="image"></p>
+<p>那么，能否考虑将其他NLP的任务套用在MRC数据（框架中）？香侬科技进行了一系列的尝试，将四个任务进行修改和调整，套用在MRC数据集上，取得了良好的效果。</p>
+<hr>
+<h2 id="MRC-for-NER"><a href="#MRC-for-NER" class="headerlink" title="MRC for NER"></a>MRC for NER</h2><p>在NER任务中，经常出现一种成为<strong>Nested NER</strong>的语言现象，简单来说就是不同的实体间存在着一些重叠关系。例如：“中国人民解放军”是一个ORG实体，这里“中国”也是一个地点实体。</p>
+<p><img src="/2020/10/15/coref-mrc/r2.png" alt="image"></p>
+<p>传统的sequence model在一个时刻仅能预测一种label，这就造成了对nested NER问题没办法有很好的支持。因此作者提出了利用MRC框架来解决NER问题（即利用现有的MRC数据集并将问题套用在相关数据上）。</p>
+<p>也就是说，针对一段文本抽取命名实体的过程转换为：给定文本和query，获取相应的答案的过程。即采用一问一答的方式来进行实体的抽取，例如：</p>
+<p><img src="/2020/10/15/coref-mrc/r3.png" alt="image"></p>
+<p>我们可以看出，<strong>query的质量</strong>十分重要，在训练的过程中需要大量的合适的query。这里可以通过一些这样的方法完成query训练数据的构建。</p>
+<ol>
+<li>当构建数据集的时候，通常会对结果进行注释，说明为什么对某个文本做特定的标签。那么标注说明则可以视为对label的自然语言解释。</li>
+<li>还有一种方法是，根据wiki百科的特点，提取每个label对应的wiki的第一段话作为label的自然语言描述。</li>
+</ol>
+<p>下面可以给出基本的模型：</p>
+<p><img src="/2020/10/15/coref-mrc/r4.png" alt="image"></p>
+<p>我们采用bert作为文本的输入，然后我们对于每个query预测token的index，如上图的P_start和P_end。<br>但是由于这里采用分开计算loss并分开预测的形式，一旦模型出错导致start和end预测出的数量不统一，那么这样结果是很难被继续使用的。所以论文中也增加了一个<strong>Start-end matching</strong>的并且也作为loss一起计算，最终计算三个loss的均值进行优化</p>
+<p>论文也讨论了这么<strong>一个问题</strong>（这个问题很重要）：如何确定NER结果的提升是来自MRC框架而不是因为BERT强大的能力？作者就设计了以下的实验进行对比说明</p>
+<p><img src="/2020/10/15/coref-mrc/r5.png" alt="image"></p>
+<p>此外，对于zero-shot的问题，证明引入MRC框架效果十分显著：</p>
+<p><img src="/2020/10/15/coref-mrc/r6.png" alt="image"></p>
+<p>根据上图可以看到在训练预料与测试使用不同数据集的情况下，基于MRC的方法仍然能达到72的成绩，而不采用MRC的方法这时候基本上就已经失效了。</p>
+<hr>
+<h2 id="MRC-for-Relation-Extraction"><a href="#MRC-for-Relation-Extraction" class="headerlink" title="MRC for Relation Extraction"></a>MRC for Relation Extraction</h2><p>关系抽取问题实际上可以理解为命名实体识别后的任务，现有的方法也存在着一点问题：</p>
+<ul>
+<li>实体间隔较远</li>
+<li>关系较不明显</li>
+<li>一个句子包含多个关系等问题</li>
+<li>有时某一个关系很难用单个二元组或三元组甚至四元组完成</li>
+<li>实体间存在着一些依赖</li>
+</ul>
+<p>所以，我们也可以把关系抽取转化为一个阅读理解的QA问题来解决：</p>
+<p><img src="/2020/10/15/coref-mrc/r7.png" alt="image"></p>
+<p>进一步来说，我们在这里构建的是一种多轮对话。即上一轮的输出是下一轮问句的一部分：</p>
+<p><img src="/2020/10/15/coref-mrc/r8.png" alt="image"></p>
+<hr>
+<h2 id="MRC-for-Coreference-Resolution"><a href="#MRC-for-Coreference-Resolution" class="headerlink" title="MRC for Coreference Resolution"></a>MRC for Coreference Resolution</h2><p><img src="/2020/10/15/coref-mrc/r9.png" alt="image"></p>
+<p>上图为常见的解决指代消解问题的<strong>pipeline</strong>，其中mention proposal在其他的论文中也叫做mention detection。在讲座中，LiJiwei博士也坦言，Mention proposal其实就是个花哨的名字，就是抽实体的过程，主要是为了削减计算量（？没get到）</p>
+<p>上面的pipeline有个<strong>问题</strong>，如果第一步的抽取结果丢失了结果，那么后面的结果是永远回不来了，所以CR中做mention detection的Recall指标非常重要。</p>
+<p><strong>用MRC的框架</strong>：</p>
+<p><img src="/2020/10/15/coref-mrc/r10.png" alt="image"></p>
+<p>假设知道“Jingle Bells”是候选mention，那么取包含这个词语的这句话，用<code>&lt;mention&gt;</code>包裹（取上下文，因为囊括了很多的信息）。对于抽取错误的，返回nan就好了</p>
+<p><strong>优点</strong>：解决了mention detection找不到mention的问题，确保后面能找回来。</p>
+<p><img src="/2020/10/15/coref-mrc/r11.png" alt="image"></p>
+<p>（上图）处理流程：假设长度为n的文本，那么span有(n-1)*n/2个span，对span打分；取分数最高的0.2n个span作为候选。S_m实际上是match的分数。（Rangking模型）</p>
+<p><img src="/2020/10/15/coref-mrc/r12.png" alt="image"></p>
+<p><img src="/2020/10/15/coref-mrc/r13.png" alt="image"></p>
+<p>对于Coref，如果a是b的答案，那么反过来b也是a的答案，例如把“the song”也作为Query。经过实验发现用单向的可以，用双向的效果会好很多：</p>
+<p><img src="/2020/10/15/coref-mrc/r18.png" alt="image"></p>
+<p><img src="/2020/10/15/coref-mrc/r19.png" alt="image"></p>
+<p><strong>这里重点</strong>：用SQuAD的数据集做pretraining。</p>
+<p><strong>经验</strong>：在Coref领域，推进SOTA 0.5个点就很困难了。本项目对内存要求比较大，可能得四五张卡（<strong>这大概是之前CorefQA跑不起来的原因</strong>）</p>
+<p><img src="/2020/10/15/coref-mrc/r14.png" alt="image"></p>
+<p>上图解读如果不用spanbert，用bert，会降低3.8，因此spanbert的重要性还是很明显的</p>
+<hr>
+<h2 id="MRC-for-text-classification"><a href="#MRC-for-text-classification" class="headerlink" title="MRC for text classification"></a>MRC for text classification</h2><p>对于文本分类问题（亦或是情感分析）， 也可以套用在MRC框架中，例如在情感分析中可以用“xxx的情感是怎么样的”来构建一个query然后获取结果从而完成分类任务。</p>
+<p><img src="/2020/10/15/coref-mrc/r15.png" alt="image"></p>
+<p>这里也产生了一个<strong>问题</strong>， 没有query怎么办呢？这里query可以用label的描述来进行构建：</p>
+<p><img src="/2020/10/15/coref-mrc/r16.png" alt="image"></p>
+<p><img src="/2020/10/15/coref-mrc/r17.png" alt="image"></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Coreference-Resolution/">Coreference Resolution</a><a href="/tags/NLP/">NLP</a>
+  </div>
+
+</div>
+
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2020/10/15/nlpcc2020/" title="NLPCC2020随手记">
+  <span>
+  NLPCC2020随手记</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2019/11/22/paper-QAnswering/" title="【论文笔记】Stacked Attention Networks for Image Question Answering">
+ <span>【论文笔记】Stacked Attention Networks for Image Question Answering
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+<div id="authorInfo">
+	
+		<div class="author-img"></div>		
+	
+	<div class="social-info">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:candnes@sina.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+
+	</div>
+</div>
+
+  
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/NLP/" title="NLP">NLP<sup>17</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Coreference-Resolution/" title="Coreference Resolution">Coreference Resolution<sup>8</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/NL2SQL/" title="NL2SQL">NL2SQL<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/踩坑/" title="踩坑">踩坑<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/学习/" title="学习">学习<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/GNN/" title="GNN">GNN<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/多模态/" title="多模态">多模态<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/爬虫/" title="爬虫">爬虫<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Algorithm/" title="Algorithm">Algorithm<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/python/" title="python">python<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/深度学习/" title="深度学习">深度学习<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+		
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/hsihohuang/kiddochan" target="_blank" title="Kiddochan">Kiddochan</a> © 2023 
+		
+		<a href="/about" target="_blank" title="Yuanqing Zhu">Yuanqing Zhu</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

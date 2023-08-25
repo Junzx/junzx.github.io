@@ -1,0 +1,545 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  
+    <title>Doccano部署踩坑 | Blog of YQ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Yuanqing Zhu">
+    
+
+    
+    <meta name="description" content="本篇记录了尝试部署Doccano的一些乱七八糟东西">
+<meta name="keywords" content="踩坑">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Doccano部署踩坑">
+<meta property="og:url" content="http://yoursite.com/2022/08/25/doccano-try/index.html">
+<meta property="og:site_name" content="Blog of YQ">
+<meta property="og:description" content="本篇记录了尝试部署Doccano的一些乱七八糟东西">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2022/08/25/doccano-try/demo.gif">
+<meta property="og:image" content="http://yoursite.com/2022/08/25/doccano-try/r1.png">
+<meta property="og:image" content="http://yoursite.com/2022/08/25/doccano-try/r2.png">
+<meta property="og:image" content="http://yoursite.com/2022/08/25/doccano-try/r3.png">
+<meta property="og:image" content="http://yoursite.com/2022/08/25/doccano-try/r4.png">
+<meta property="og:image" content="http://yoursite.com/2022/08/25/doccano-try/r5.png">
+<meta property="og:image" content="http://yoursite.com/2022/08/25/doccano-try/r6.png">
+<meta property="og:image" content="http://yoursite.com/2022/08/25/doccano-try/r7.png">
+<meta property="og:image" content="http://yoursite.com/2022/08/25/doccano-try/e1.png">
+<meta property="og:image" content="http://yoursite.com/2022/08/25/doccano-try/e2.png">
+<meta property="og:image" content="http://yoursite.com/2022/08/25/doccano-try/e3.png">
+<meta property="og:image" content="http://yoursite.com/2022/08/25/doccano-try/e4.png">
+<meta property="og:image" content="http://yoursite.com/2022/08/25/doccano-try/e5.png">
+<meta property="og:image" content="http://yoursite.com/2022/08/25/doccano-try/e6.png">
+<meta property="og:updated_time" content="2023-08-25T06:51:17.594Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Doccano部署踩坑">
+<meta name="twitter:description" content="本篇记录了尝试部署Doccano的一些乱七八糟东西">
+<meta name="twitter:image" content="http://yoursite.com/2022/08/25/doccano-try/demo.gif">
+
+    
+    <link rel="alternative" href="atom.xml" title="Blog of YQ" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/icon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="//img/IMG_8752.JPG">
+    <link rel="apple-touch-icon-precomposed" href="//img/IMG_8752.JPG">
+    
+    <link rel="stylesheet" href="/css/style.css"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+</html>
+  <body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><header>
+      
+<div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Blog of YQ">Blog of YQ</a></h1>
+				<h2 class="blog-motto">this is subtitle :)</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope="" itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2022/08/25/doccano-try/" title="Doccano部署踩坑" itemprop="url">Doccano部署踩坑</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Yuanqing Zhu" target="_blank" itemprop="author">Yuanqing Zhu</a>
+		
+  </p><p class="article-time">
+    <time datetime="2022-08-24T16:00:00.000Z" itemprop="datePublished"> 发表于 2022-08-25</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><blockquote>
+<p>doccano is an open source text annotation tool for humans. It provides annotation features for text classification, sequence labeling and sequence to sequence tasks. So, you can create labeled data for sentiment analysis, named entity recognition, text summarization and so on. Just create a project, upload data and start annotating. You can build a dataset in hours.</p>
+</blockquote>
+<p>简单来说目前支持三种类型的标注：</p>
+<ul>
+<li>文本分类</li>
+<li>机器翻译</li>
+<li>NER</li>
+</ul>
+<p>下面截图中的Text to sql是被当作了一种机器翻译任务来做，但是实际中如果对于多个表格进行SQL标注可能会有很多不方便的地方</p>
+<p><img src="/2022/08/25/doccano-try/demo.gif" alt="demo"></p>
+<h3 id="测试用用户名及密码"><a href="#测试用用户名及密码" class="headerlink" title="测试用用户名及密码"></a>测试用用户名及密码</h3><h4 id="admin"><a href="#admin" class="headerlink" title="admin"></a>admin</h4><ul>
+<li>用户名：testadmin</li>
+<li>密码：testadmin_1432</li>
+</ul>
+<h4 id="普通用户"><a href="#普通用户" class="headerlink" title="普通用户"></a>普通用户</h4><ul>
+<li>用户名：test_user_1</li>
+<li><p>密码：test_password_1</p>
+</li>
+<li><p>用户名：test_user_2</p>
+</li>
+<li>密码：test_password_2</li>
+</ul>
+<h4 id="使用感受"><a href="#使用感受" class="headerlink" title="使用感受"></a>使用感受</h4><ul>
+<li>目前一个项目不能够对不同的标注着分配不同的任务，网友给出了一个二次开发示例（<a href="https://blog.csdn.net/u013008795/article/details/106804737" target="_blank" rel="noopener">link</a>）</li>
+<li>看issue比较活跃，目前是1.0版本，目测bug还是蛮多的，不过用起来还算流畅，而且界面比较美观</li>
+</ul>
+<h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><h4 id="注册新用户"><a href="#注册新用户" class="headerlink" title="注册新用户"></a>注册新用户</h4><p>需要设置正确的邮箱才能注册成功，测试国双的邮箱似乎收不到注册邮件，可以用其他的试试，然后会收到确认邮件，点击链接即可完成激活</p>
+<p><img src="/2022/08/25/doccano-try/r1.png" alt="demo"></p>
+<h4 id="项目管理界面（注：只有管理员权限的可以）"><a href="#项目管理界面（注：只有管理员权限的可以）" class="headerlink" title="项目管理界面（注：只有管理员权限的可以）"></a>项目管理界面（注：只有管理员权限的可以）</h4><p><img src="/2022/08/25/doccano-try/r2.png" alt="demo"></p>
+<h4 id="创建新项目"><a href="#创建新项目" class="headerlink" title="创建新项目"></a>创建新项目</h4><p><img src="/2022/08/25/doccano-try/r3.png" alt="demo"></p>
+<p>这里：</p>
+<ul>
+<li><code>document classification</code>对应文本打标签/文本分类</li>
+<li><code>sequence labeling</code>对应NER任务</li>
+<li><code>sequence to sequenec</code>对应机器翻译、<strong>Text to SQL</strong>等任务</li>
+<li><code>speech to text</code></li>
+</ul>
+<h4 id="数据管理页面（以文本分类任务为例）"><a href="#数据管理页面（以文本分类任务为例）" class="headerlink" title="数据管理页面（以文本分类任务为例）"></a>数据管理页面（以文本分类任务为例）</h4><h5 id="上传数据"><a href="#上传数据" class="headerlink" title="上传数据"></a>上传数据</h5><p><img src="/2022/08/25/doccano-try/r4.png" alt="demo"></p>
+<p>注：这里可以直接选择Plain上传txt格式的数据，并且可以多次上传</p>
+<h5 id="标签管理"><a href="#标签管理" class="headerlink" title="标签管理"></a>标签管理</h5><p><img src="/2022/08/25/doccano-try/r5.png" alt="demo"></p>
+<h5 id="分配人员"><a href="#分配人员" class="headerlink" title="分配人员"></a>分配人员</h5><p><img src="/2022/08/25/doccano-try/r6.png" alt="demo"></p>
+<h4 id="数据标注"><a href="#数据标注" class="headerlink" title="数据标注"></a>数据标注</h4><p><img src="/2022/08/25/doccano-try/r7.png" alt="demo"></p>
+<hr>
+<h1 id="安装与配置踩坑记录"><a href="#安装与配置踩坑记录" class="headerlink" title="安装与配置踩坑记录"></a>安装与配置踩坑记录</h1><p>说明：已在个人服务器<a href="http://xxxx/" target="_blank" rel="noopener">http://xxxx/</a> 启服务，但是当时没有相关记录，因此重新在笔记本ubuntu子系统中进行配置并记录，有些内容则采用服务器的进行截图</p>
+<p>ubuntu子系统：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">DISTRIB_ID=Ubuntu</span><br><span class="line">DISTRIB_RELEASE=18.04</span><br><span class="line">DISTRIB_CODENAME=bionic</span><br><span class="line">DISTRIB_DESCRIPTION=&quot;Ubuntu 18.04.2 LTS&quot;</span><br></pre></td></tr></table></figure>
+<h3 id="通过python解释器启动"><a href="#通过python解释器启动" class="headerlink" title="通过python解释器启动"></a>通过python解释器启动</h3><ol>
+<li>下载：<a href="/uploads/6073a1163562c5e6ae3b9fd4b9bfef21/doccano-master.zip">doccano-master.zip</a>，或通过<code>git clone https://github.com/doccano/doccano.git</code></li>
+<li><p>按照以下操作进行</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cd</span> doccano/app</span><br><span class="line">$ pip install -r requirements.txt</span><br><span class="line">$ python manage.py migrate</span><br><span class="line">$ python manage.py create_roles</span><br><span class="line">$ python manage.py create_admin --noinput --username <span class="string">"admin"</span> --email <span class="string">"admin@example.com"</span> --password <span class="string">"password"</span></span><br><span class="line">$ python manage.py runserver</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h3 id="一些坑"><a href="#一些坑" class="headerlink" title="一些坑"></a>一些坑</h3><ol>
+<li>此项目是基于python3，python2会有一些包的版本冲突问题</li>
+<li>在pip requirements的时候安装psycopg2遇到报错：<code>Error: pg_config executable not found</code><br><img src="/2022/08/25/doccano-try/e1.png" alt="demo"><br>，则<strong>执行</strong><code>sudo apt-get install libpq-dev</code>(参考<a href="https://unix.stackexchange.com/questions/345814/gcc-error-installing-psycopg2-package-for-python3-on-centos-7-3" target="_blank" rel="noopener">link</a>)</li>
+<li>（接上一步）再次pip会遇到这个问题<code>src/pyodbc.h:56:10: fatal error: sql.h: No such file or directory</code>：<img src="/2022/08/25/doccano-try/e2.png" alt="demo"><br>，因此<strong>执行</strong>：<code>sudo apt install unixodbc-dev</code>(参考<a href="https://github.com/mkleehammer/pyodbc/issues/441" target="_blank" rel="noopener">link</a>)，然后再次进行pip</li>
+<li>按照文档提示执行python manage.py 等指令后，在最后一步runserver起来服务后，访问<code>127.0.0.1:8000</code>会产生报错：<br><img src="/2022/08/25/doccano-try/e3.png" alt="demo">，在终端也会显示报错<code>FileNotFoundError: [Errno 2] No such file or directory: &#39;/mnt/e/MyGitCode/doccano-master/app/server/static/webpack-stats.json&#39;</code>，实际上我们还没有启动前端的服务…因此，我们需要<strong>进入</strong><code>doccano/app/server/static/</code>中，<strong>执行</strong><code>npm install</code>，完毕后我们需要<strong>执行</strong><code>npm run build</code>，然后<strong>执行</strong><code>npm start</code>，然后再启动mangage</li>
+<li>如果遇到一个<code>Error: Can&#39;t resolve &#39;vue-chartjs/es/mixins/reactiveProp&#39;</code>的错误，这时候我们需要<strong>执行</strong><code>npm install vue-chartjs chart.js --save</code>(参考<a href="https://www.npmjs.com/package/vue-chartjs" target="_blank" rel="noopener">link</a>)</li>
+<li>(<strong>重要</strong>)接<code>4</code>：为了让外部可以访问链接，可能需要修改：<ol>
+<li><code>app/server/static/webpack.config.js</code>的这些地方：<br><img src="/2022/08/25/doccano-try/e4.png" alt="demo"></li>
+<li><code>app/app/settings.py</code>的这些地方：<br><img src="/2022/08/25/doccano-try/e5.png" alt="demo"></li>
+</ol>
+</li>
+<li>执行<code>python manage.py runserver 0.0.0.0:8901</code>，此时可以通过此url进行访问</li>
+<li>如果在注册页面出现<code>decode error</code>，可能将<code>/app/authentification/views.py</code>的43行后面的<code>.decode()</code>注释掉</li>
+<li>注册新用户需要邮箱认证，因此需要设置发送邮件的邮箱信息，在<code>/app/settings.py</code>的这里进行配置：<br><img src="/2022/08/25/doccano-try/e6.png" alt="demo">（参考：<a href="https://github.com/doccano/doccano/commit/95344e562908cbc87609f5e15c9bdf019f3c99b9" target="_blank" rel="noopener">link</a>, <a href="https://github.com/doccano/doccano/issues/663" target="_blank" rel="noopener">link</a>）</li>
+</ol>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/踩坑/">踩坑</a>
+  </div>
+
+</div>
+
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2022/08/25/gcn-try/" title="【随手记】一些关于GCN踩坑">
+  <span>
+  【随手记】一些关于GCN踩坑</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2021/09/14/coref-e2e笔记/" title="【Coref】【论文笔记】End-to-end Neural Coreference Resolution">
+ <span>【Coref】【论文笔记】End-to-end Neural Coreference Resolution
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+<div id="authorInfo">
+	
+		<div class="author-img"></div>		
+	
+	<div class="social-info">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:candnes@sina.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+
+	</div>
+</div>
+
+  
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/NLP/" title="NLP">NLP<sup>17</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Coreference-Resolution/" title="Coreference Resolution">Coreference Resolution<sup>8</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/NL2SQL/" title="NL2SQL">NL2SQL<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/踩坑/" title="踩坑">踩坑<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/学习/" title="学习">学习<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/GNN/" title="GNN">GNN<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/多模态/" title="多模态">多模态<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/爬虫/" title="爬虫">爬虫<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Algorithm/" title="Algorithm">Algorithm<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/python/" title="python">python<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/深度学习/" title="深度学习">深度学习<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+		
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/hsihohuang/kiddochan" target="_blank" title="Kiddochan">Kiddochan</a> © 2023 
+		
+		<a href="/about" target="_blank" title="Yuanqing Zhu">Yuanqing Zhu</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

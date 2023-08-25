@@ -1,0 +1,551 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  
+    <title>NLPCC2020随手记 | Blog of YQ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Yuanqing Zhu">
+    
+
+    
+    <meta name="description" content="应该是当时参会然后记下的一些东西">
+<meta name="keywords" content="NLP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NLPCC2020随手记">
+<meta property="og:url" content="http://yoursite.com/2020/10/15/nlpcc2020/index.html">
+<meta property="og:site_name" content="Blog of YQ">
+<meta property="og:description" content="应该是当时参会然后记下的一些东西">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2020/10/15/nlpcc2020/r1.jpg">
+<meta property="og:updated_time" content="2023-08-24T09:39:28.101Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="NLPCC2020随手记">
+<meta name="twitter:description" content="应该是当时参会然后记下的一些东西">
+<meta name="twitter:image" content="http://yoursite.com/2020/10/15/nlpcc2020/r1.jpg">
+
+    
+    <link rel="alternative" href="atom.xml" title="Blog of YQ" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/icon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="//img/IMG_8752.JPG">
+    <link rel="apple-touch-icon-precomposed" href="//img/IMG_8752.JPG">
+    
+    <link rel="stylesheet" href="/css/style.css"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+</html>
+  <body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><header>
+      
+<div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Blog of YQ">Blog of YQ</a></h1>
+				<h2 class="blog-motto">this is subtitle :)</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope="" itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2020/10/15/nlpcc2020/" title="NLPCC2020随手记" itemprop="url">NLPCC2020随手记</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Yuanqing Zhu" target="_blank" itemprop="author">Yuanqing Zhu</a>
+		
+  </p><p class="article-time">
+    <time datetime="2020-10-15T09:05:18.000Z" itemprop="datePublished"> 发表于 2020-10-15</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<h2 id="An-Analysis-of-BERT-in-Document-Ranking"><a href="#An-Analysis-of-BERT-in-Document-Ranking" class="headerlink" title="An Analysis of BERT in Document Ranking"></a>An Analysis of BERT in Document Ranking</h2><p>本节主要是简要讨论了文档检索的相关方法，然后讨论了BERT预训练语言模型在文档检索任务上的一些实验分析。</p>
+<h3 id="文档检索相关知识"><a href="#文档检索相关知识" class="headerlink" title="文档检索相关知识"></a>文档检索相关知识</h3><p>目前文档检索的挑战主要有以下两点：</p>
+<ul>
+<li>如何构建函数或者选择合适的方法来进行文档检索</li>
+<li>如何确保大量文档的检索效率</li>
+</ul>
+<p>之前的工作中，基于NN的主要有以下几个方法：</p>
+<ul>
+<li>Representation-focused：DSSM(2013), CDSSM(2014), ARC-I(2014)</li>
+<li>Interaction-focused: ARC-II(2014), DRMM(2016), K-NRM(2017)</li>
+</ul>
+<p>这里提到了两个数据集：</p>
+<ul>
+<li>Sogou-QCL：<a href="http://www.thuir.cn/sogouqcl/，" target="_blank" rel="noopener">http://www.thuir.cn/sogouqcl/，</a> 来自于搜索引擎搜狗的查询日志，数据总共由10个bz2类型的文件组成，压缩后约84GB。为了更好地方便研究者使用，我们为数据集中的所有查询-文档对计算了五种基于点击模型的相关性。每条查询记录了查询的文本、出现频率和多个文档。每个文档包括了文档的标题、全文内容、html源码、出现频率以及五种基于点击模型的相关性。</li>
+<li>MS MARCO：<a href="https://microsoft.github.io/msmarco/，" target="_blank" rel="noopener">https://microsoft.github.io/msmarco/，</a> 是一个专注于深度学习搜索的数据集，是一个具有100,000个必应Bing问题和人工生成答案的问题回答数据集。在该网站也有不同人提交的结果排名。</li>
+</ul>
+<h3 id="BERT-in-document-ranking"><a href="#BERT-in-document-ranking" class="headerlink" title="BERT in document ranking"></a>BERT in document ranking</h3><p>在BERT的中间层中，attention通常在[CLS]，[SEP]，句号等字符上，而不是（想象中的）高IDF的一些token，由此引出了这篇工作：</p>
+<p><strong>An Analysis of BERT in Document Ranking</strong>, <a href="http://www.thuir.cn/group/~mzhang/publications/SIGIR2020-ZhanJingtao.pdf" target="_blank" rel="noopener">http://www.thuir.cn/group/~mzhang/publications/SIGIR2020-ZhanJingtao.pdf</a> （后续作者想继续在此方向进行研究，但是发现这个点已经也有人在进行相关的研究了）</p>
+<p>作者用了三种不同的MASK方法进行试验：</p>
+<ol>
+<li>删掉句号（效果损失很大）</li>
+<li>句号用逗号替换（下降明显）</li>
+<li>attention mask（即正常计算attention但是在最后一步丢掉）</li>
+</ol>
+<p>得到的<strong>结论</strong>主要有以下几个方面：</p>
+<ul>
+<li>bert会将多余不需要的attention放在句号上</li>
+<li>对于document来说，会将document丢失的信息添加到query中</li>
+<li>interaction 在2~5层及10层左右明显</li>
+</ul>
+<hr>
+<p>最后作者给出了展望：</p>
+<p><img src="/2020/10/15/nlpcc2020/r1.jpg" alt="image"></p>
+<hr>
+<h1 id="Advances-in-Personalized-News-Recommendation"><a href="#Advances-in-Personalized-News-Recommendation" class="headerlink" title="Advances in Personalized News Recommendation"></a>Advances in Personalized News Recommendation</h1><blockquote>
+<p>Abstract: Online news services such as Microsoft News have gained huge popularity for online news<br>reading. However, since massive news articles are published every day, users of online news services<br>are facing heavy information overload. Therefore, news recommendation is an important technique for<br>personalized news services to improve the reading experience of users and alleviate information overload.<br>In this talk, I will introduce the story behind our largescale<br>news recommendation dataset named<br>MIND which was jointly released by MSRA and Microsoft News team. In addition, I will introduce<br>several existing news recommendation frameworks and algorithms, share our experience and findings on<br>language representation learning for this task, and discuss several possible directions for future research<br>efforts.</p>
+</blockquote>
+<p>本节作者主要是推荐了比较多论文，受限于时间限制都没有展开介绍，下面记录介绍&amp;提及的相关论文</p>
+<ol>
+<li>【KDD2017】Embedding-based News Recommendation for Millions of Users, <a href="http://library.usc.edu.ph/ACM/KKD%202017/pdfs/p1933.pdf" target="_blank" rel="noopener">LINK</a></li>
+</ol>
+<blockquote>
+<p>Okura S, Tagami Y, Ono S, et al. Embedding-based news recommendation for millions of users[C]//Proceedings of the 23rd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining. 2017: 1933-1942.</p>
+</blockquote>
+<p>本篇是首个工业界的产出，虽然一般但是讨论十分充分，因此推荐</p>
+<ol>
+<li>【WWW2018】DKN: Deep Knowledge-Aware Network for News Recommendation， <a href="https://arxiv.org/pdf/1801.08284.pdf" target="_blank" rel="noopener">LINK</a></li>
+</ol>
+<blockquote>
+<p>Wang H, Zhang F, Xie X, et al. DKN: Deep knowledge-aware network for news recommendation[C]//Proceedings of the 2018 world wide web conference. 2018: 1835-1844.</p>
+</blockquote>
+<p>有用到知识图谱来链接实体，使用实体信息增强文本的内容</p>
+<ol>
+<li>【EMNLP2019】Neural News Recommendation with Heterogeneous User Behavior，微软，<a href="https://www.aclweb.org/anthology/D19-1493.pdf" target="_blank" rel="noopener">LINK</a></li>
+</ol>
+<blockquote>
+<p>Wu C, Wu F, An M, et al. Neural News Recommendation with Heterogeneous User Behavior[C]//Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing and the 9th International Joint Conference on Natural Language Processing (EMNLP-IJCNLP). 2019: 4876-4885.</p>
+</blockquote>
+<p>这里微软利用了每个平台的用户行为信息作为用户视角，进行整合再进行新闻推荐。当然这里微软能完成这份研究也和他本身有一个较强的生态也是息息相关的。</p>
+<ol>
+<li>【KDD2019】NPA: Neural News Recommendation with Personalized Attention，<a href="https://arxiv.org/pdf/1907.05559.pdf" target="_blank" rel="noopener">LINK</a></li>
+</ol>
+<blockquote>
+<p>Wu C, Wu F, An M, et al. NPA: neural news recommendation with personalized attention[C]//Proceedings of the 25th ACM SIGKDD International Conference on Knowledge Discovery &amp; Data Mining. 2019: 2576-2584.</p>
+</blockquote>
+<ul>
+<li>对于同样的新闻不同的人可能有不同的喜好</li>
+<li>因此提升对新闻个性化建模</li>
+</ul>
+<p>在推荐阶段，希望不同用户看到的内容的attention是不同的（个性化）</p>
+<ol>
+<li>【ACL2019】Neural News Recommendation with Long- and Short-term User Representations, 微软，<a href="https://nvagus.github.io/paper/ACL19NewsRec.pdf" target="_blank" rel="noopener">LINK</a></li>
+</ol>
+<blockquote>
+<p>An M, Wu F, Wu C, et al. Neural news recommendation with long-and short-term user representations[C]//Proceedings of the 57th Annual Meeting of the Association for Computational Linguistics. 2019: 336-345.</p>
+</blockquote>
+<p>本论文讨论了如何刻画用户长期、短期的兴趣（比如用户买了一公斤洗发水可能短期内会对洗发水失去兴趣）</p>
+<ol>
+<li>【IJCAI2020】User Modeling with Click Preference and Reading Satisfaction for News Recommendation，微软，<a href="https://www.ijcai.org/Proceedings/2020/0418.pdf" target="_blank" rel="noopener">LINK</a></li>
+</ol>
+<blockquote>
+<p>Wu C, Wu F, Qi T, et al. User Modeling with Click Preference and Reading Satisfaction for News Recommendation[J].</p>
+</blockquote>
+<p>本篇考虑了这么一个问题：点击不等于实际兴趣。比如遇到标题党的文章，用户被欺骗点击进去了但是这种点击并不能衡量用户的实际兴趣，本篇也考虑了用户的阅读时间等信息</p>
+<ol>
+<li>MIND：MIcrosoft News Dataset， 微软新闻数据集，工业级，英文，<a href="https://msnews.github.io/" target="_blank" rel="noopener">LINK</a></li>
+</ol>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/NLP/">NLP</a>
+  </div>
+
+</div>
+
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2021/08/24/coref-now/" title="【Coref】一些资料的收集">
+  <span>
+  【Coref】一些资料的收集</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2020/10/15/coref-mrc/" title="【Coref】Formulating Different NLP Tasks under the MRC Framework">
+ <span>【Coref】Formulating Different NLP Tasks under the MRC Framework
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+<div id="authorInfo">
+	
+		<div class="author-img"></div>		
+	
+	<div class="social-info">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:candnes@sina.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+
+	</div>
+</div>
+
+  
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/NLP/" title="NLP">NLP<sup>17</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Coreference-Resolution/" title="Coreference Resolution">Coreference Resolution<sup>8</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/NL2SQL/" title="NL2SQL">NL2SQL<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/踩坑/" title="踩坑">踩坑<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/学习/" title="学习">学习<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/GNN/" title="GNN">GNN<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/多模态/" title="多模态">多模态<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/爬虫/" title="爬虫">爬虫<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Algorithm/" title="Algorithm">Algorithm<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/python/" title="python">python<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/深度学习/" title="深度学习">深度学习<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+		
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/hsihohuang/kiddochan" target="_blank" title="Kiddochan">Kiddochan</a> © 2023 
+		
+		<a href="/about" target="_blank" title="Yuanqing Zhu">Yuanqing Zhu</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

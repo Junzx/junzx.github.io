@@ -1,0 +1,565 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  
+    <title>【Coref】【论文笔记】End-to-end Neural Coreference Resolution | Blog of YQ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Yuanqing Zhu">
+    
+
+    
+    <meta name="description" content="E2E-Coref学习笔记">
+<meta name="keywords" content="Coreference Resolution,NLP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【Coref】【论文笔记】End-to-end Neural Coreference Resolution">
+<meta property="og:url" content="http://yoursite.com/2021/09/14/coref-e2e笔记/index.html">
+<meta property="og:site_name" content="Blog of YQ">
+<meta property="og:description" content="E2E-Coref学习笔记">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2023-08-24T09:52:41.767Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="【Coref】【论文笔记】End-to-end Neural Coreference Resolution">
+<meta name="twitter:description" content="E2E-Coref学习笔记">
+
+    
+    <link rel="alternative" href="atom.xml" title="Blog of YQ" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/icon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="//img/IMG_8752.JPG">
+    <link rel="apple-touch-icon-precomposed" href="//img/IMG_8752.JPG">
+    
+    <link rel="stylesheet" href="/css/style.css"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+</html>
+  <body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><header>
+      
+<div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Blog of YQ">Blog of YQ</a></h1>
+				<h2 class="blog-motto">this is subtitle :)</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope="" itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2021/09/14/coref-e2e笔记/" title="【Coref】【论文笔记】End-to-end Neural Coreference Resolution" itemprop="url">【Coref】【论文笔记】End-to-end Neural Coreference Resolution</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Yuanqing Zhu" target="_blank" itemprop="author">Yuanqing Zhu</a>
+		
+  </p><p class="article-time">
+    <time datetime="2021-09-13T16:00:00.000Z" itemprop="datePublished"> 发表于 2021-09-14</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<p>paper-<a href="https://aclanthology.org/D17-1018.pdf" target="_blank" rel="noopener">End-to-end Neural Coreference Resolution</a></p>
+<p>输入：包含<code>T</code>个词语的文档<code>D</code>，其中则有：<script type="math/tex">N=\frac{T·(T+1)}{2}</script>个<code>Span</code>，对于<code>Span</code> $i$的边界可以表示为<script type="math/tex">START_{(i)}</script>、<script type="math/tex">END_{(i)}</script></p>
+<p>那么当前的任务为：对于每个<code>Span</code>$i$，能够确定一个先行词$y_i$</p>
+<p>$\varepsilon$出现情况包含两种：</p>
+<ol>
+<li><code>Span</code>不是一个entity mention</li>
+<li><code>Span</code>是一个entity mention，但是不与其它mention存在共指关系</li>
+</ol>
+<hr>
+<p>训练学习目标：</p>
+<div align="center">
+
+$$P(y_1, ..., y_N|D)$$
+
+$$=\prod_{i=1}^{N}P(y_i|D)$$
+
+$$=\prod_{i=1}^{N}\frac{exp(s(i, y_i))}{\sum_{y'\in\mathcal{Y}(i)exp(s(i, y'))}}$$
+
+</div>
+
+
+<p>其中，</p>
+<p>$s(i, j)$是两个<code>Span</code> $i$、$j$是否有共指关系的score，其取值为：</p>
+<div align="center">
+
+$$s(i, j)=
+\begin{cases}
+0& 0, j=\epsilon\\
+1& s_m(i)+s_m(j)+s_a(i, j)
+\end{cases}$$
+
+</div>
+
+<p>这里，<script type="math/tex">s_m(i)</script>、<script type="math/tex">s_m(j)</script>是<code>Span</code><script type="math/tex">i j</script>是否为mention的score；<script type="math/tex">s_a(i, j)</script>是$i$是否为$j$先行词的score</p>
+<hr>
+<p>为了计算<script type="math/tex">s_m(i)</script>及<script type="math/tex">s_a(i, j)</script>，引出对<code>Span</code>$i$的向量表达：<script type="math/tex">\boldsymbol{g}_i</script></p>
+<p>那么，<script type="math/tex">\boldsymbol{g}_i</script>是如合计算的呢？</p>
+<p>使用一个BiLSTM结构，对<code>Span</code>$i$的每个字进行编码，即：</p>
+<div align="center">
+
+$$boldsymbol{f}_{t,\delta}=\sigma(\boldsymbol{W}_f[\boldsymbol{x}_t, \boldsymbol{h}_{t+\delta,\delta}]+\boldsymbol{b}_i)$$
+
+$$\boldsymbol{o}_{t,\delta}=\sigma(\boldsymbol{W}_o[\boldsymbol{x}_t, \boldsymbol{h}_{t+\delta,\delta}]+\boldsymbol{b}_o)$$
+
+$$\boldsymbol{\tilde{c}}_{t,\delta}=tanh(\boldsymbol{W}_c[\boldsymbol{x}_t,\boldsymbol{h}_{t+\delta,\delta}]+\boldsymbol{b}_c)$$
+
+$$\boldsymbol{c}_{t,\delta}=\boldsymbol{f}_{t,\delta}\circ\boldsymbol{\tilde{c}}_{t,\delta}+(1-\boldsymbol{f}_{t,\delta})\circ\boldsymbol{c}_{t+\delta,\delta}$$
+
+$$\boldsymbol{h}_{t,\delta}=\boldsymbol{o}_{t,\delta}\circ tanh(\boldsymbol{c}_{t,\delta})$$
+
+$$\boldsymbol{x}_t^*=[\boldsymbol{h}_{t,1}, \boldsymbol{h}_{t,-1}]$$
+
+</div>
+
+<p>上面<code>-1, 1</code>就表示方向，论文对于不同的句子用了独立的LSTM，原因是跨句子的信息（在本实验种）不是很重要。</p>
+<p>然后提取<code>Syntactic head</code>，做法是对每个<code>Span</code>做attention：</p>
+<div align="center">
+
+$$\alpha=\boldsymbol{\omega}_{\alpha}\cdot FFNN_\alpha(\boldsymbol{x}_t^*)$$
+
+$$a_{i,t}=\frac{exp(\alpha_t)}{\sum_{k=START(i)}^{END(i}exp(\alpha_k)}$$
+
+$$\boldsymbol{\hat{x}}_i=\sum_{t=START(i)}^{END(i)} a_{i,t}\cdot \boldsymbol{x}_t$$
+
+</div>
+
+<p>因此，<script type="math/tex">\boldsymbol{\hat{x}}_i</script>就是<code>Span</code>$i$的词语向量之和</p>
+<p>从而，引出<script type="math/tex">\boldsymbol{g}_i</script>的表达：</p>
+<div align="center">
+
+$$\boldsymbol{g}_i=[\boldsymbol{x}_{START(i)}^*, \boldsymbol{x}_{END(i)}, \boldsymbol{\hat{x}}_i, \varnothing(i)]$$
+
+</div>
+
+<hr>
+<p>至此，引出<script type="math/tex">s_m(i)</script>、<script type="math/tex">s_a(i, j)</script>的计算方法：</p>
+<div align="center">
+
+$$s_m(i)=\boldsymbol{\omega}_m\cdot FFNN_m(\boldsymbol{g}_i)$$
+
+$$s_a(i,j)=\boldsymbol{\omega}_a\cdot FFNN_a([\boldsymbol{g}_i, \boldsymbol{g}_j, \boldsymbol{g}_i \circ \boldsymbol{g}_j, \varnothing(i,j)])$$
+
+</div>
+
+<hr>
+<p>训练细节</p>
+<p>由于在训练数据中只能看到聚类信息，而先行词都是潜在地存在，所以作者通过<code>GOLD cluster</code>对所有正确的先行词隐晦地用边缘对数似然进行优化（<code>marginal log-likelihood</code>）:</p>
+<div align="center">
+
+$$log \prod_{i=1}^{N} \sum_{\hat{y}\in \mathcal{Y}\cap GOLD(i)} P(\hat{y})$$
+
+</div>
+
+<p>其中，<code>GOLD(i)</code>是包含<code>Span</code>$i$的<code>GOLD cluster</code>的<code>Span</code>集合，若<code>Span</code>$i$不属于任意一个<code>Gold cluster</code>或者所有的Gold 先行词均被剪枝删除，那么：<code>GOLD(i)={</code><script type="math/tex">\epsilon</script><code>}</code>。将虚拟先行词$\epsilon$的score固定为0可以清除模型中表述提取部分的自由度（好像翻译得不太对</p>
+<p>超参部分</p>
+<ul>
+<li>Word representation<ul>
+<li>300d Glove</li>
+<li>50d Turian</li>
+<li>OOV：zero vector</li>
+</ul>
+</li>
+<li>Hidden dimensions<ul>
+<li>200d LSTM</li>
+<li>FFNN：2 hidden layer；ReLU</li>
+</ul>
+</li>
+<li><p>Feature encoding</p>
+<ul>
+<li>二元特征：2个<code>Span</code>是否来自于一个speaker</li>
+<li>距离特征：<code>[1, 2, 3, 4, 5-7, 8-15, 16-31, 32-63, 64+]</code></li>
+<li><p>mention width</p>
+<p>以上构成20d向量</p>
+</li>
+</ul>
+</li>
+<li>Pruning<ul>
+<li>max span width: L=10</li>
+<li><script type="math/tex">\lambda</script>=0.4</li>
+<li>最大先行词数量：K=250</li>
+<li>Document随机切分为50个句子</li>
+</ul>
+</li>
+<li>Learning<ul>
+<li>ADAM for minibatch size of 1</li>
+<li>word embedding, char cnn embedding: dropout: 0.5</li>
+<li>所有隐藏层、特征: dropout: 0.2</li>
+<li>learning rate: decay 0.1% every 100 steps</li>
+<li>trained: 150 epoch</li>
+</ul>
+</li>
+</ul>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Coreference-Resolution/">Coreference Resolution</a><a href="/tags/NLP/">NLP</a>
+  </div>
+
+</div>
+
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2022/08/25/doccano-try/" title="Doccano部署踩坑">
+  <span>
+  Doccano部署踩坑</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2021/08/24/coref-now/" title="【Coref】一些资料的收集">
+ <span>【Coref】一些资料的收集
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+<div id="authorInfo">
+	
+		<div class="author-img"></div>		
+	
+	<div class="social-info">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:candnes@sina.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+
+	</div>
+</div>
+
+  
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/NLP/" title="NLP">NLP<sup>17</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Coreference-Resolution/" title="Coreference Resolution">Coreference Resolution<sup>8</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/NL2SQL/" title="NL2SQL">NL2SQL<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/踩坑/" title="踩坑">踩坑<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/学习/" title="学习">学习<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/GNN/" title="GNN">GNN<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/多模态/" title="多模态">多模态<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/爬虫/" title="爬虫">爬虫<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Algorithm/" title="Algorithm">Algorithm<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/python/" title="python">python<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/深度学习/" title="深度学习">深度学习<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+		
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/hsihohuang/kiddochan" target="_blank" title="Kiddochan">Kiddochan</a> © 2023 
+		
+		<a href="/about" target="_blank" title="Yuanqing Zhu">Yuanqing Zhu</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

@@ -1,0 +1,851 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  
+    <title>【NL2SQL】表格与问题匹配探索 | Blog of YQ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Yuanqing Zhu">
+    
+
+    
+    <meta name="description" content="对于表格与问题匹配还存在一些问题，因此进行一些探索">
+<meta name="keywords" content="NLP,NL2SQL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【NL2SQL】表格与问题匹配探索">
+<meta property="og:url" content="http://yoursite.com/2023/08/24/NL2SQL表格与问题匹配探索/index.html">
+<meta property="og:site_name" content="Blog of YQ">
+<meta property="og:description" content="对于表格与问题匹配还存在一些问题，因此进行一些探索">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2023/08/24/NL2SQL表格与问题匹配探索/r1.png">
+<meta property="og:image" content="http://yoursite.com/2023/08/24/NL2SQL表格与问题匹配探索/r2.png">
+<meta property="og:image" content="http://yoursite.com/2023/08/24/NL2SQL表格与问题匹配探索/r3.png">
+<meta property="og:updated_time" content="2023-08-24T08:59:27.502Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="【NL2SQL】表格与问题匹配探索">
+<meta name="twitter:description" content="对于表格与问题匹配还存在一些问题，因此进行一些探索">
+<meta name="twitter:image" content="http://yoursite.com/2023/08/24/NL2SQL表格与问题匹配探索/r1.png">
+
+    
+    <link rel="alternative" href="atom.xml" title="Blog of YQ" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/icon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="//img/IMG_8752.JPG">
+    <link rel="apple-touch-icon-precomposed" href="//img/IMG_8752.JPG">
+    
+    <link rel="stylesheet" href="/css/style.css"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+</html>
+  <body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><header>
+      
+<div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Blog of YQ">Blog of YQ</a></h1>
+				<h2 class="blog-motto">this is subtitle :)</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope="" itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2023/08/24/NL2SQL表格与问题匹配探索/" title="【NL2SQL】表格与问题匹配探索" itemprop="url">【NL2SQL】表格与问题匹配探索</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Yuanqing Zhu" target="_blank" itemprop="author">Yuanqing Zhu</a>
+		
+  </p><p class="article-time">
+    <time datetime="2023-08-23T16:00:00.000Z" itemprop="datePublished"> 发表于 2023-08-24</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<p>【问题与表格匹配】探索</p>
+<h2 id="目的"><a href="#目的" class="headerlink" title="目的"></a>目的</h2><p>目前的模型已具有的能力是，指定表格进行提问（因为需要提供表格信息），在实际中可能存在给定问题不指定表格的情况，那么需要有一种方案去判别当前的句子是在用哪个表格</p>
+<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><ul>
+<li>当作多分类问题：对单个问题选择某个表</li>
+<li>当作二分类问题：直接判别问题与某个表是否有关联</li>
+</ul>
+<p>计划采用第二种思路，因为在使用过程中表格的数量不确定，因此类别也就不固定。可以考虑选择top-n的表格作为候选，然后再进一步排序等方法确定选择表格。</p>
+<h2 id="数据"><a href="#数据" class="headerlink" title="数据"></a>数据</h2><p>以比赛所提供的数据作为基础，构建<code>问题</code>、<code>表格信息</code>的句子对</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>数据</th>
+<th>相关</th>
+<th>不相关</th>
+<th>共计</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>train</td>
+<td>37281</td>
+<td>112170</td>
+<td>149451</td>
+</tr>
+<tr>
+<td>dev</td>
+<td>4241</td>
+<td>12365</td>
+<td>16606</td>
+</tr>
+<tr>
+<td>test</td>
+<td>4396</td>
+<td>13170</td>
+<td>17566</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="结果-baseline"><a href="#结果-baseline" class="headerlink" title="结果(baseline)"></a>结果(baseline)</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">             precision    recall  f1-score   support</span><br><span class="line"></span><br><span class="line">          0    0.98971   0.96355   0.97645     13170</span><br><span class="line">          1    0.89882   0.96997   0.93304      4396</span><br><span class="line"></span><br><span class="line">avg / total    0.96696   0.96516   0.96559     17566</span><br></pre></td></tr></table></figure>
+<h2 id="优化"><a href="#优化" class="headerlink" title="优化"></a>优化</h2><ol>
+<li>第一版在生成负样本的时候增大了三倍，导致不平衡，本次采用等量级负样本</li>
+</ol>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>数据</th>
+<th>相关</th>
+<th>不相关</th>
+<th>共计</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>train</td>
+<td>37387</td>
+<td>37348</td>
+<td>74735</td>
+</tr>
+<tr>
+<td>dev</td>
+<td>4135</td>
+<td>4169</td>
+<td>8304</td>
+</tr>
+<tr>
+<td>test</td>
+<td>4396</td>
+<td>4393</td>
+<td>8789</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>  result1: 采用上面的数据进行test</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">precision    recall  f1-score   support</span><br><span class="line"></span><br><span class="line">        0       0.98      0.96      0.97      4393</span><br><span class="line">        1       0.96      0.98      0.97      4396</span><br><span class="line"></span><br><span class="line">avg / total       0.97      0.97      0.97      8789</span><br></pre></td></tr></table></figure>
+<p>  result2：采用baseline的数据进行test<br>  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">            precision    recall  f1-score   support</span><br><span class="line"></span><br><span class="line">        0       0.99      0.96      0.98     13170</span><br><span class="line">        1       0.89      0.98      0.93      4396</span><br><span class="line"></span><br><span class="line">avg / total       0.97      0.96      0.96     17566</span><br></pre></td></tr></table></figure></p>
+<ol>
+<li>生成数据时候增加了分隔符，在tokenize的部分用[sep]进行分割</li>
+</ol>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>数据</th>
+<th>相关</th>
+<th>不相关</th>
+<th>共计</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>train</td>
+<td>37299</td>
+<td>37433</td>
+<td>74732</td>
+</tr>
+<tr>
+<td>dev</td>
+<td>4223</td>
+<td>4081</td>
+<td>8304</td>
+</tr>
+<tr>
+<td>test</td>
+<td>4396</td>
+<td>4392</td>
+<td>8788</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>  result1: 采用上面的数据进行test<br>  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">            precision    recall  f1-score   support</span><br><span class="line"></span><br><span class="line">        0       0.98      0.96      0.97      4392</span><br><span class="line">        1       0.96      0.98      0.97      4396</span><br><span class="line"></span><br><span class="line">avg / total       0.97      0.97      0.97      8788</span><br></pre></td></tr></table></figure></p>
+<p>  result2: 采用baseline的数据进行test<br>  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">            precision    recall  f1-score   support</span><br><span class="line"></span><br><span class="line">        0    0.99192   0.96006   0.97573     13170</span><br><span class="line">        1    0.89085   0.97657   0.93174      4396</span><br><span class="line"></span><br><span class="line">avg / total    0.96663   0.96419   0.96472     17566</span><br></pre></td></tr></table></figure></p>
+<h2 id="补充实验"><a href="#补充实验" class="headerlink" title="补充实验"></a>补充实验</h2><p>训练模型所需的数据是由比赛的train、valid数据构建的，因此用比赛中的test作为最终的测试结果。</p>
+<p>即对test中的每个问题，令其与给定的所有表格进行计算判别，取所有判别为“相关”的数据作为候选，按照logits排序。共计4086个问题，1102个table。</p>
+<p>采用top-n对结果进行衡量</p>
+<h4 id="用-sep-切分文本训练的模型-模型已丢-进行测试"><a href="#用-sep-切分文本训练的模型-模型已丢-进行测试" class="headerlink" title="用[sep]切分文本训练的模型(模型已丢)进行测试"></a>用<code>[sep]切分文本</code>训练的模型(模型已丢)进行测试</h4><h5 id="1-计算结果"><a href="#1-计算结果" class="headerlink" title="1. 计算结果"></a>1. 计算结果</h5><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>n</th>
+<th>top-n命中正确结果的样本数</th>
+<th>accuracy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>top_n: 1</strong></td>
+<td>1453</td>
+<td>0.3556045031815957</td>
+</tr>
+<tr>
+<td>top_n: 5</td>
+<td>2451</td>
+<td>0.5998531571218796</td>
+</tr>
+<tr>
+<td>top_n: 10</td>
+<td>2810</td>
+<td>0.6877141458639257</td>
+</tr>
+<tr>
+<td>top_n: 15</td>
+<td>3012</td>
+<td>0.737151248164464</td>
+</tr>
+<tr>
+<td>top_n: 20</td>
+<td>3174</td>
+<td>0.7767988252569751</td>
+</tr>
+<tr>
+<td><strong>top_n: 25</strong></td>
+<td>3318</td>
+<td>0.8120411160058737</td>
+</tr>
+<tr>
+<td>top_n: 30</td>
+<td>3405</td>
+<td>0.8333333333333334</td>
+</tr>
+<tr>
+<td>top_n: 35</td>
+<td>3487</td>
+<td>0.8534018600097896</td>
+</tr>
+<tr>
+<td>top_n: 40</td>
+<td>3558</td>
+<td>0.8707782672540382</td>
+</tr>
+<tr>
+<td>top_n: 45</td>
+<td>3614</td>
+<td>0.8844836025452766</td>
+</tr>
+<tr>
+<td>top_n: 50</td>
+<td>3662</td>
+<td>0.8962310327949095</td>
+</tr>
+<tr>
+<td>top_n: 55</td>
+<td>3704</td>
+<td>0.9065100342633382</td>
+</tr>
+<tr>
+<td>top_n: 60</td>
+<td>3737</td>
+<td>0.9145863925599609</td>
+</tr>
+<tr>
+<td><strong>不约束top-n</strong></td>
+<td>3998</td>
+<td>0.9784630445423397</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h5 id="2-bad-case分析-以top-5为例"><a href="#2-bad-case分析-以top-5为例" class="headerlink" title="2. bad case分析(以top-5为例)"></a>2. bad case分析(以top-5为例)</h5><p>对于某个<strong>top-5返回False</strong>的例子来说，模型预测的top-5的表格信息如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;&apos;title&apos;: &apos;08 商业地产重点跟踪公司一览      &apos;, &apos;header&apos;: [&apos;公司名称&apos;, &apos;总市值（亿元）&apos;, &apos;EPS2010&apos;, &apos;EPS2011&apos;, &apos;EPS2012&apos;, &apos;EPS2013&apos;, &apos;PE2010&apos;, &apos;PE2011&apos;, &apos;PE2012&apos;, &apos;PE2013&apos;, &apos;PB&apos;, &apos;RNAVP&apos;, &apos;折价率&apos;, &apos;评级&apos;], &apos;common&apos;: &apos;资料来源：wind&apos;, &apos;id&apos;: &apos;69cf5a2e334311e9a575542696d6e445&apos;, &apos;types&apos;: [&apos;text&apos;, &apos;real&apos;, &apos;real&apos;, &apos;real&apos;, &apos;real&apos;, &apos;real&apos;, &apos;real&apos;, &apos;real&apos;, &apos;real&apos;, &apos;real&apos;, &apos;real&apos;, &apos;real&apos;, &apos;real&apos;, &apos;text&apos;]&#125;</span><br><span class="line">&#123;&apos;title&apos;: &apos;25 关注类综合类开发公司估值表 &apos;, &apos;header&apos;: [&apos;代码&apos;, &apos;公司名称&apos;, &apos;最新股价&apos;, &apos;EPS2011&apos;, &apos;EPS2012E&apos;, &apos;EPS2013E&apos;, &apos;PE2011&apos;, &apos;PE2012E&apos;, &apos;PE2013E&apos;, &apos;PB估值&apos;], &apos;common&apos;: &apos;资料来源：wind&apos;, &apos;id&apos;: &apos;69cfabd1334311e9bb3b542696d6e445&apos;, &apos;types&apos;: [&apos;text&apos;, &apos;text&apos;, &apos;real&apos;, &apos;real&apos;, &apos;real&apos;, &apos;real&apos;, &apos;real&apos;, &apos;real&apos;, &apos;real&apos;, &apos;real&apos;]&#125;</span><br><span class="line">&#123;&apos;title&apos;: &apos;23 非住宅公司估值表&apos;, &apos;header&apos;: [&apos;证券代码&apos;, &apos;公司名称&apos;, &apos;股价&apos;, &apos;EPS2011&apos;, &apos;EPS2012E&apos;, &apos;EPS2013E&apos;, &apos;PE2011&apos;, &apos;PE2012E&apos;, &apos;PE2013E&apos;, &apos;NAV&apos;, &apos;折价率&apos;, &apos;PB2012Q1&apos;, &apos;评级&apos;], &apos;common&apos;: &apos;资料来源：wind&apos;, &apos;id&apos;: &apos;69cf9028334311e99d34542696d6e445&apos;, &apos;types&apos;: [&apos;text&apos;, &apos;text&apos;, &apos;real&apos;, &apos;real&apos;, &apos;real&apos;, &apos;real&apos;, &apos;real&apos;, &apos;real&apos;, &apos;real&apos;, &apos;text&apos;, &apos;text&apos;, &apos;real&apos;, &apos;text&apos;]&#125;</span><br><span class="line">&#123;&apos;title&apos;: &apos;62 盈利预测和估值2&apos;, &apos;header&apos;: [&apos;公司&apos;, &apos;评级&apos;, &apos;股价&apos;, &apos;总市值&apos;, &apos;年初以来涨幅&apos;, &apos;EPS2011&apos;, &apos;EPS2012E&apos;, &apos;EPS2013E&apos;, &apos;PE2011&apos;, &apos;PE2012E&apos;, &apos;PE2013E&apos;, &apos;RNAV&apos;, &apos;P/R-V&apos;, &apos;PB2011&apos;], &apos;common&apos;: &apos;资料来源：wind&apos;, &apos;id&apos;: &apos;69d1246b334311e9a6e6542696d6e445&apos;, &apos;types&apos;: [&apos;text&apos;, &apos;text&apos;, &apos;real&apos;, &apos;real&apos;, &apos;real&apos;, &apos;real&apos;, &apos;real&apos;, &apos;real&apos;, &apos;real&apos;, &apos;real&apos;, &apos;real&apos;, &apos;real&apos;, &apos;real&apos;, &apos;real&apos;]&#125;</span><br><span class="line">&#123;&apos;title&apos;: &apos;61 盈利预测和估值1&apos;, &apos;header&apos;: [&apos;公司&apos;, &apos;评级&apos;, &apos;股价&apos;, &apos;总市值&apos;, &apos;年初以来涨幅&apos;, &apos;EPS2011&apos;, &apos;EPS2012E&apos;, &apos;EPS2013E&apos;, &apos;PE2011&apos;, &apos;PE2012E&apos;, &apos;PE2013E&apos;, &apos;RNAV&apos;, &apos;P/R-V&apos;, &apos;PB2011&apos;], &apos;common&apos;: &apos;资料来源：wind&apos;, &apos;id&apos;: &apos;69d116a1334311e9ac14542696d6e445&apos;, &apos;types&apos;: [&apos;text&apos;, &apos;text&apos;, &apos;real&apos;, &apos;real&apos;, &apos;real&apos;, &apos;real&apos;, &apos;real&apos;, &apos;real&apos;, &apos;real&apos;, &apos;real&apos;, &apos;real&apos;, &apos;text&apos;, &apos;text&apos;, &apos;real&apos;]&#125;</span><br></pre></td></tr></table></figure>
+<p>而正确结果为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&quot;title&quot;: &quot;66 表3：2012年6月12日非住宅开发重点覆盖公司估值表 &quot;, &quot;header&quot;: [&quot;证券代码&quot;, &quot;公司名称&quot;, &quot;股价&quot;, &quot;EPS2011&quot;, &quot;EPS2012E&quot;, &quot;EPS2013E&quot;, &quot;PE2011&quot;, &quot;PE2012E&quot;, &quot;PE2013E&quot;, &quot;NAV&quot;, &quot;折价率&quot;, &quot;PB2012Q1&quot;, &quot;评级&quot;], &quot;common&quot;: &quot;资料来源：wind&quot;, &quot;id&quot;: &quot;69d4941c334311e9aefd542696d6e445&quot;, &quot;types&quot;: [&quot;text&quot;, &quot;text&quot;, &quot;real&quot;, &quot;real&quot;, &quot;real&quot;, &quot;real&quot;, &quot;real&quot;, &quot;real&quot;, &quot;real&quot;, &quot;text&quot;, &quot;text&quot;, &quot;real&quot;, &quot;text&quot;]&#125;</span><br></pre></td></tr></table></figure>
+<p>模型的对于表格的输入是取<code>title</code>、<code>header</code>、<code>common</code>和<code>types</code>，可以看到上面模型预测的结果与实际结果十分相似，其他的bad case也有很多这种情况出现。</p>
+<p>找到了一些相似的表格：</p>
+<p><img src="/2023/08/24/NL2SQL表格与问题匹配探索/r1.png" alt="image"></p>
+<hr>
+<p><img src="/2023/08/24/NL2SQL表格与问题匹配探索/r2.png" alt="image"></p>
+<hr>
+<p><img src="/2023/08/24/NL2SQL表格与问题匹配探索/r3.png" alt="image"></p>
+<h5 id="3-初步结论"><a href="#3-初步结论" class="headerlink" title="3. 初步结论"></a>3. 初步结论</h5><p>根据<code>1.</code>中的表可以看到，<code>不约束top-n</code>得到的accuracy与模型在数据集的结果基本吻合，说明对于给定一个question和大量表格的情况，模型通常能够找到正确的一个。</p>
+<p>但这对于实际中使用可能意义不大，因为我们希望模型在n越小的情况下准确率更高，这样才可以通过进一步的排序或其他可以更高效的获取选择的表格，从而确保下游任务的准确率，防止错误叠加。</p>
+<p>根据<code>2.</code>的bad case可以看到，如果表格内容的标题列名十分相似，那么很容易造成判别上的失误，因此候选表格的差异性越大，则越容易进行区分</p>
+<h5 id="4-todo"><a href="#4-todo" class="headerlink" title="4. todo"></a>4. todo</h5><p>取n=25，考虑是否有简易的方法能够从候选中提取正确表格或进行重排序</p>
+<h4 id="工时数据实验"><a href="#工时数据实验" class="headerlink" title="工时数据实验"></a>工时数据实验</h4><p>取NL2SQL-3-9.xlsx中的51个问题，并将工时数据表信息、专利数据表信息添加到test.tables.json中，共计1104个表格</p>
+<h5 id="1-计算结果-1"><a href="#1-计算结果-1" class="headerlink" title="1. 计算结果"></a>1. 计算结果</h5><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>n</th>
+<th>top-n命中正确结果的样本数</th>
+<th>accuracy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>top_n: 1</td>
+<td>36</td>
+<td>0.7058823529411765</td>
+</tr>
+<tr>
+<td>top_n: 2</td>
+<td>40</td>
+<td>0.7843137254901961</td>
+</tr>
+<tr>
+<td>top_n: 3</td>
+<td>43</td>
+<td>0.8431372549019608</td>
+</tr>
+<tr>
+<td>top_n: 4</td>
+<td>43</td>
+<td>0.8431372549019608</td>
+</tr>
+<tr>
+<td>top_n: 5</td>
+<td>43</td>
+<td>0.8431372549019608</td>
+</tr>
+<tr>
+<td>top_n: 10</td>
+<td>43</td>
+<td>0.8431372549019608</td>
+</tr>
+<tr>
+<td>top_n: 15</td>
+<td>43</td>
+<td>0.8431372549019608</td>
+</tr>
+<tr>
+<td>top_n: 20</td>
+<td>44</td>
+<td>0.8627450980392157</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h5 id="2-bad-case分析"><a href="#2-bad-case分析" class="headerlink" title="2. bad case分析"></a>2. bad case分析</h5><p><strong>例1</strong>: (找到正确表格但排序靠后)：</p>
+<blockquote>
+<p>请问对外销售类的项目有哪些是处于机会阶段？</p>
+</blockquote>
+<ul>
+<li>sort_table:(720, 0.9984748), (444, 0.9982322), (1102, 0.9982218), (300, 0.99791163), (256, 0.9978811)</li>
+<li><p>tables: </p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">(720, &#123;&apos;name&apos;: &apos;Table_f6f5fbcc453d11e9b358f40f24344a08&apos;, &apos;title&apos;: &apos;&apos;, &apos;header&apos;: [&apos;项目名称&apos;, &apos;项目类型&apos;, &apos;项目负责人&apos;, &apos;成员信息&apos;, &apos;指导教师&apos;], &apos;common&apos;: &apos;&apos;, &apos;id&apos;: &apos;f6f5fbcc453d11e9b358f40f24344a08&apos;, &apos;types&apos;: [&apos;text&apos;, &apos;text&apos;, &apos;text&apos;, &apos;text&apos;, &apos;text&apos;]&#125;)</span><br><span class="line">(444, &#123;&apos;name&apos;: &apos;Table_ee2c51ba453d11e99f2af40f24344a08&apos;, &apos;title&apos;: &apos;&apos;, &apos;header&apos;: [&apos;项目名称&apos;, &apos;项目类别&apos;, &apos;项目负责人&apos;, &apos;院校&apos;], &apos;common&apos;: &apos;&apos;, &apos;id&apos;: &apos;ee2c51ba453d11e99f2af40f24344a08&apos;, &apos;types&apos;: [&apos;text&apos;, &apos;text&apos;, &apos;text&apos;, &apos;text&apos;]&#125;)</span><br><span class="line">(1102, &#123;&apos;name&apos;: &apos;iwork&apos;, &apos;title&apos;: &apos;工时统计&apos;, &apos;header&apos;: [&apos;工时起始时间&apos;, &apos;工时结束时间&apos;, &apos;年&apos;, &apos;周&apos;, &apos;一级部门&apos;, &apos;二级部门&apos;, &apos;末级部门&apos;, &apos;项目编号&apos;, &apos;项目名称&apos;, &apos;项目所属部门&apos;, &apos;项目所属一级部门&apos;, &apos;项目所属二级部门&apos;, &apos;项目类型&apos;, &apos;项目阶段&apos;, &apos;项目状态&apos;, &apos;当前负责人&apos;, &apos;销售负责人&apos;, &apos;员工姓名&apos;, &apos;项目工时&apos;], &apos;common&apos;: &apos;&apos;, &apos;id&apos;: &apos;iwork&apos;, &apos;types&apos;: [&apos;text&apos;, &apos;text&apos;, &apos;real&apos;, &apos;real&apos;, &apos;text&apos;, &apos;text&apos;, &apos;text&apos;, &apos;text&apos;, &apos;text&apos;, &apos;text&apos;, &apos;text&apos;, &apos;text&apos;, &apos;text&apos;, &apos;text&apos;, &apos;text&apos;, &apos;text&apos;, &apos;text&apos;, &apos;text&apos;, &apos;real&apos;]&#125;)</span><br><span class="line">(300, &#123;&apos;name&apos;: &apos;Table_aae0d6263b0611e99436f40f24344a08&apos;, &apos;title&apos;: &apos;&apos;, &apos;header&apos;: [&apos;序号&apos;, &apos;课题名称&apos;, &apos;负责人&apos;, &apos;工作单位&apos;, &apos;项目类别&apos;, &apos;预期成果&apos;, &apos;计划完成时间&apos;, &apos;学科&apos;, &apos;批准号&apos;], &apos;common&apos;: &apos;&apos;, &apos;id&apos;: &apos;aae0d6263b0611e99436f40f24344a08&apos;, &apos;types&apos;: [&apos;real&apos;, &apos;text&apos;, &apos;text&apos;, &apos;text&apos;, &apos;text&apos;, &apos;text&apos;, &apos;real&apos;, &apos;text&apos;, &apos;text&apos;]&#125;)</span><br><span class="line">(256, &#123;&apos;name&apos;: &apos;Table_aa62c2513b0611e9bb4ff40f24344a08&apos;, &apos;title&apos;: &apos;&apos;, &apos;header&apos;: [&apos;所属单位&apos;, &apos;批准文号&apos;, &apos;项目名称&apos;, &apos;负责人&apos;, &apos;项目类别&apos;], &apos;common&apos;: &apos;&apos;, &apos;id&apos;: &apos;aa62c2513b0611e9bb4ff40f24344a08&apos;, &apos;types&apos;: [&apos;text&apos;, &apos;text&apos;, &apos;text&apos;, &apos;text&apos;, &apos;text&apos;]&#125;)</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><strong>例2</strong>：(找到结果但是顺序有误）</p>
+<blockquote>
+<p>xxx项目的项目编号什么？</p>
+<ul>
+<li>sort_table(top-5): (372, 0.9988543), (510, 0.99878293), (622, 0.99878293), (440, 0.9987821), (291, 0.9987771)</li>
+<li>tables:</li>
+</ul>
+</blockquote>
+<pre><code><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">(372, &#123;&apos;name&apos;: &apos;Table_ab96f9423b0611e9bb77f40f24344a08&apos;, &apos;title&apos;: &apos;&apos;, &apos;header&apos;: [&apos;项目编号&apos;, &apos;项目名称&apos;, &apos;在哪些实验室（名称）开展项目&apos;, &apos;项目负责人&apos;, &apos;指导老师&apos;, &apos;项目组学生人数（含负责人）&apos;, &apos;项目资助金额&apos;], &apos;common&apos;: &apos;&apos;, &apos;id&apos;: &apos;ab96f9423b0611e9bb77f40f24344a08&apos;, &apos;types&apos;: [&apos;real&apos;, &apos;text&apos;, &apos;text&apos;, &apos;text&apos;, &apos;text&apos;, &apos;real&apos;, &apos;real&apos;]&#125;)</span><br><span class="line">(510, &#123;&apos;name&apos;: &apos;Table_f02c7dfa453d11e9afa2f40f24344a08&apos;, &apos;title&apos;: &apos;&apos;, &apos;header&apos;: [&apos;序号&apos;, &apos;课题名称&apos;, &apos;项目负责人&apos;, &apos;单位&apos;, &apos;项目编号&apos;], &apos;common&apos;: &apos;&apos;, &apos;id&apos;: &apos;f02c7dfa453d11e9afa2f40f24344a08&apos;, &apos;types&apos;: [&apos;real&apos;, &apos;text&apos;, &apos;text&apos;, &apos;text&apos;, &apos;text&apos;]&#125;)</span><br><span class="line">(622, &#123;&apos;name&apos;: &apos;Table_f3b3599e453d11e99f94f40f24344a08&apos;, &apos;title&apos;: &apos;&apos;, &apos;header&apos;: [&apos;序号&apos;, &apos;课题名称&apos;, &apos;项目负责人&apos;, &apos;单位&apos;, &apos;项目编号&apos;], &apos;common&apos;: &apos;&apos;, &apos;id&apos;: &apos;f3b3599e453d11e99f94f40f24344a08&apos;, &apos;types&apos;: [&apos;real&apos;, &apos;text&apos;, &apos;text&apos;, &apos;text&apos;, &apos;text&apos;]&#125;)</span><br><span class="line">(440, &#123;&apos;name&apos;: &apos;Table_ee089bd1453d11e99965f40f24344a08&apos;, &apos;title&apos;: &apos;&apos;, &apos;header&apos;: [&apos;序号&apos;, &apos;项目编号&apos;, &apos;项目名称&apos;, &apos;项目牵头承担单位&apos;, &apos;项目负责人&apos;, &apos;中央财政经费（万元）&apos;, &apos;项目实施周期（年）&apos;], &apos;common&apos;: &apos;&apos;, &apos;id&apos;: &apos;ee089bd1453d11e99965f40f24344a08&apos;, &apos;types&apos;: [&apos;real&apos;, &apos;text&apos;, &apos;text&apos;, &apos;text&apos;, &apos;text&apos;, &apos;real&apos;, &apos;real&apos;]&#125;)</span><br><span class="line">(291, &#123;&apos;name&apos;: &apos;Table_aac5e5633b0611e9917af40f24344a08&apos;, &apos;title&apos;: &apos;&apos;, &apos;header&apos;: [&apos;序号&apos;, &apos;项目编号&apos;, &apos;项目名称&apos;, &apos;负责人&apos;, &apos;单位&apos;, &apos;初审结果&apos;], &apos;common&apos;: &apos;&apos;, &apos;id&apos;: &apos;aac5e5633b0611e9917af40f24344a08&apos;, &apos;types&apos;: [&apos;real&apos;, &apos;text&apos;, &apos;text&apos;, &apos;text&apos;, &apos;text&apos;, &apos;text&apos;]&#125;)</span><br></pre></td></tr></table></figure>
+</code></pre><p><strong>例3</strong>： （完全没找到正确的表格）</p>
+<blockquote>
+<p>2019年第9周xxx都参与了哪些项目？</p>
+</blockquote>
+<ul>
+<li>sort_table:[(1098, 0.99640155), (1057, 0.9587623), (1079, 0.92949605), (1097, 0.9289557), (1091, 0.9287066), (1095, 0.9277953), (1082, 0.92476124), (1096, 0.9241249), (1083, 0.9241075), (1080, 0.9186452), (1094, 0.90010804), (1093, 0.8983552), (1099, 0.8900752)]</li>
+<li><p>tables</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">(1057, &#123;&apos;name&apos;: &apos;Table_4d2702b33aaa11e98410f40f24344a08&apos;, &apos;title&apos;: &apos;图表 19   2019年第 4周（1.21-1.27）网页游戏开服排行榜TOP5（仅列上市公司游戏）&apos;, &apos;header&apos;: [&apos;排名&apos;, &apos;游戏&apos;, &apos;服务器&apos;, &apos;开发商&apos;, &apos;发行商&apos;], &apos;common&apos;: &apos;资料来源：9K9K，华创证券&apos;, &apos;id&apos;: &apos;4d2702b33aaa11e98410f40f24344a08&apos;, &apos;types&apos;: [&apos;real&apos;, &apos;text&apos;, &apos;real&apos;, &apos;text&apos;, &apos;text&apos;]&#125;)</span><br><span class="line">(1079, &#123;&apos;name&apos;: &apos;Table_4d290c423aaa11e9bca6f40f24344a08&apos;, &apos;title&apos;: &apos;表5：2019年第7周（2019.02.18 - 2019.02.24）影投票房排名TOP10&apos;, &apos;header&apos;: [&apos;影投公司&apos;, &apos;周票房（亿）&apos;, &apos;观影人次（万）&apos;, &apos;场均人次&apos;], &apos;common&apos;: &apos;资料来源：艺恩网，光大证券研究所&apos;, &apos;id&apos;: &apos;4d290c423aaa11e9bca6f40f24344a08&apos;, &apos;types&apos;: [&apos;text&apos;, &apos;real&apos;, &apos;real&apos;, &apos;real&apos;]&#125;)</span><br><span class="line">(1080, &#123;&apos;name&apos;: &apos;Table_4d29122b3aaa11e99decf40f24344a08&apos;, &apos;title&apos;: &apos;表6：2019年第7周（2019.02.18 - 2019.02.24）电视剧和网剧总播放量TOP10&apos;, &apos;header&apos;: [&apos;排名&apos;, &apos;剧集名称&apos;, &apos;播放量（亿）&apos;, &apos;播出平台&apos;], &apos;common&apos;: &apos;资料来源：骨朵传媒，光大证券研究所&apos;, &apos;id&apos;: &apos;4d29122b3aaa11e99decf40f24344a08&apos;, &apos;types&apos;: [&apos;real&apos;, &apos;text&apos;, &apos;real&apos;, &apos;text&apos;]&#125;)</span><br><span class="line">(1082, &#123;&apos;name&apos;: &apos;Table_4d291df53aaa11e9a2b5f40f24344a08&apos;, &apos;title&apos;: &apos;表8：2019年第7周（2019.02.18 - 2019.02.24）电视综艺播放量TOP10&apos;, &apos;header&apos;: [&apos;排名&apos;, &apos;剧集名称&apos;, &apos;播放量（万）&apos;, &apos;播出平台&apos;], &apos;common&apos;: &apos;资料来源：骨朵传媒，光大证券研究所&apos;, &apos;id&apos;: &apos;4d291df53aaa11e9a2b5f40f24344a08&apos;, &apos;types&apos;: [&apos;real&apos;, &apos;text&apos;, &apos;real&apos;, &apos;text&apos;]&#125;)</span><br><span class="line">(1083, &#123;&apos;name&apos;: &apos;Table_4d2922cc3aaa11e9bcc4f40f24344a08&apos;, &apos;title&apos;: &apos;表9：2019年第7周（2019.02.18 - 2019.02.24）网络综艺播放量TOP10&apos;, &apos;header&apos;: [&apos;排名&apos;, &apos;剧集名称&apos;, &apos;播放量（万）&apos;, &apos;播出平台&apos;], &apos;common&apos;: &apos;资料来源：骨朵传媒，光大证券研究所&apos;, &apos;id&apos;: &apos;4d2922cc3aaa11e9bcc4f40f24344a08&apos;, &apos;types&apos;: [&apos;real&apos;, &apos;text&apos;, &apos;real&apos;, &apos;text&apos;]&#125;)</span><br><span class="line">(1091, &#123;&apos;name&apos;: &apos;Table_4d2999003aaa11e99af6f40f24344a08&apos;, &apos;title&apos;: &apos;表5：2019年第2周（2019.1.14 - 2019.1.20）全国电影票房TOP10&apos;, &apos;header&apos;: [&apos;影片名称&apos;, &apos;周票房（万）&apos;, &apos;票房占比（%）&apos;, &apos;场均人次&apos;], &apos;common&apos;: &apos;资料来源：艺恩电影智库，光大证券研究所&apos;, &apos;id&apos;: &apos;4d2999003aaa11e99af6f40f24344a08&apos;, &apos;types&apos;: [&apos;text&apos;, &apos;text&apos;, &apos;real&apos;, &apos;real&apos;]&#125;)</span><br><span class="line">(1093, &#123;&apos;name&apos;: &apos;Table_4d29c00a3aaa11e990d5f40f24344a08&apos;, &apos;title&apos;: &apos;表11：2019年第2周（2019.1.14 - 2019.1.20）电视综艺播放量TOP10&apos;, &apos;header&apos;: [&apos;排名&apos;, &apos;剧集名称&apos;, &apos;播放量（万）&apos;, &apos;播出平台&apos;], &apos;common&apos;: &apos;资料来源：骨朵传媒，光大证券研究所&apos;, &apos;id&apos;: &apos;4d29c00a3aaa11e990d5f40f24344a08&apos;, &apos;types&apos;: [&apos;real&apos;, &apos;text&apos;, &apos;real&apos;, &apos;text&apos;]&#125;)</span><br><span class="line">(1094, &#123;&apos;name&apos;: &apos;Table_4d29c5573aaa11e9a1d6f40f24344a08&apos;, &apos;title&apos;: &apos;表12：2019年第2周（2019.1.14 - 2019.1.20）网络综艺播放量TOP10&apos;, &apos;header&apos;: [&apos;排名&apos;, &apos;剧集名称&apos;, &apos;播放量（万）&apos;, &apos;播出平台&apos;], &apos;common&apos;: &apos;资料来源：骨朵传媒，光大证券研究所&apos;, &apos;id&apos;: &apos;4d29c5573aaa11e9a1d6f40f24344a08&apos;, &apos;types&apos;: [&apos;real&apos;, &apos;text&apos;, &apos;text&apos;, &apos;text&apos;]&#125;)</span><br><span class="line">(1095, &#123;&apos;name&apos;: &apos;Table_4d29d0513aaa11e9b911f40f24344a08&apos;, &apos;title&apos;: &apos;表3：2019年第4周（2019.01.28 - 2019.02.03）全国电影票房TOP10&apos;, &apos;header&apos;: [&apos;影片名称&apos;, &apos;周票房（万）&apos;, &apos;票房占比（%）&apos;, &apos;场均人次&apos;], &apos;common&apos;: &apos;资料来源：艺恩电影智库，光大证券研究所&apos;, &apos;id&apos;: &apos;4d29d0513aaa11e9b911f40f24344a08&apos;, &apos;types&apos;: [&apos;text&apos;, &apos;real&apos;, &apos;real&apos;, &apos;real&apos;]&#125;)</span><br><span class="line">(1096, &#123;&apos;name&apos;: &apos;Table_4d29d67d3aaa11e98adbf40f24344a08&apos;, &apos;title&apos;: &apos;表4：2019年第4周（2019.01.28 - 2019.02.03）全国院线票房TOP10&apos;, &apos;header&apos;: [&apos;院线名称&apos;, &apos;周票房（万）&apos;, &apos;观影人次（万）&apos;, &apos;平均票价&apos;], &apos;common&apos;: &apos;资料来源：艺恩网，光大证券研究所&apos;, &apos;id&apos;: &apos;4d29d67d3aaa11e98adbf40f24344a08&apos;, &apos;types&apos;: [&apos;text&apos;, &apos;real&apos;, &apos;real&apos;, &apos;real&apos;]&#125;)</span><br><span class="line">(1097, &#123;&apos;name&apos;: &apos;Table_4d29fb703aaa11e9aa6af40f24344a08&apos;, &apos;title&apos;: &apos;表11：2019年第4周（2019.01.28 - 2019.02.03）国漫播放量TOP10&apos;, &apos;header&apos;: [&apos;排名&apos;, &apos;剧集名称&apos;, &apos;播放量（万）&apos;, &apos;播出平台&apos;], &apos;common&apos;: &apos;资料来源：骨朵传媒，光大证券研究所&apos;, &apos;id&apos;: &apos;4d29fb703aaa11e9aa6af40f24344a08&apos;, &apos;types&apos;: [&apos;real&apos;, &apos;text&apos;, &apos;real&apos;, &apos;text&apos;]&#125;)</span><br><span class="line">(1098, &#123;&apos;name&apos;: &apos;Table_4d2a165c3aaa11e9a032f40f24344a08&apos;, &apos;title&apos;: &apos;表6：2019年第1周（2019.01.07 - 2019.01.13）影投票房排名TOP10&apos;, &apos;header&apos;: [&apos;影投公司&apos;, &apos;周票房（万）&apos;, &apos;观影人次（万）&apos;, &apos;场均人次&apos;], &apos;common&apos;: &apos;资料来源：艺恩网，光大证券研究所&apos;, &apos;id&apos;: &apos;4d2a165c3aaa11e9a032f40f24344a08&apos;, &apos;types&apos;: [&apos;text&apos;, &apos;real&apos;, &apos;real&apos;, &apos;real&apos;]&#125;)</span><br><span class="line">(1099, &#123;&apos;name&apos;: &apos;Table_4d2a2fe83aaa11e99004f40f24344a08&apos;, &apos;title&apos;: &apos;表10：2019年第1周（2019.01.07 - 2019.01.13）电视综艺播放量TOP10&apos;, &apos;header&apos;: [&apos;排名&apos;, &apos;剧集名称&apos;, &apos;播放量（万）&apos;, &apos;播出平台&apos;], &apos;common&apos;: &apos;资料来源：骨朵传媒，光大证券研究所&apos;, &apos;id&apos;: &apos;4d2a2fe83aaa11e99004f40f24344a08&apos;, &apos;types&apos;: [&apos;real&apos;, &apos;text&apos;, &apos;real&apos;, &apos;text&apos;]&#125;)</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<hr>
+<h1 id="时隔很久后，再一次进行试验"><a href="#时隔很久后，再一次进行试验" class="headerlink" title="时隔很久后，再一次进行试验"></a>时隔很久后，再一次进行试验</h1><p>原始：<a href="/uploads/a78597e0b406b92988a4b01fd46fb6c9/database_select.rar">database_select.rar</a></p>
+<p>格式为：<code>问题，db_id，sql query，涉及的table名称</code></p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">[</span><br><span class="line">  [</span><br><span class="line">    <span class="string">"1964年及其之后成立，或者主场馆不为波尔多体育场，球队最大容纳人数有多少？"</span>,</span><br><span class="line">    <span class="string">"欧洲杯球队"</span>,</span><br><span class="line">    <span class="string">"select 所属地区 , max ( 容纳人数 ) from 球队 where 成立时间 &gt;= 1964 or 主场馆 != '波尔多体育场' group by 所属地区"</span>,</span><br><span class="line">    [</span><br><span class="line">      <span class="string">"球队"</span></span><br><span class="line">    ]</span><br><span class="line">  ],</span><br><span class="line">  [</span><br><span class="line">    <span class="string">"饱和脂肪含量升序排前3或不饱和脂肪含量降序排前5的名称有什么？"</span>,</span><br><span class="line">    <span class="string">"坚果"</span>,</span><br><span class="line">    <span class="string">"( select 名称 from 坚果 order by 饱和脂肪含量 asc limit 3 ) union ( select 名称 from 坚果 order by 不饱和脂肪含量 desc limit 5 )"</span>,</span><br><span class="line">    [</span><br><span class="line">      <span class="string">"坚果"</span></span><br><span class="line">    ]</span><br><span class="line">  ],</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<p>构建0-1数据集：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">_tmp(&apos;train&apos;)</span><br><span class="line">_tmp(&apos;dev_from_dev_after_training&apos;)</span><br><span class="line">_tmp(&apos;dev_from_dev_in_training&apos;)</span><br><span class="line">_tmp(&apos;dev_from_train&apos;)</span><br><span class="line"></span><br><span class="line">final:  51309</span><br><span class="line">final:  4771</span><br><span class="line">final:  1190</span><br><span class="line">final:  2703</span><br></pre></td></tr></table></figure>
+<p>格式：<code>tmp[&#39;db_string&#39;] = &quot;|&quot;.join(tmp[&quot;table_names&quot;]) + &quot;+&quot; + &quot;|&quot;.join([_i[1] for _i in tmp[&quot;column_names&quot;]])</code></p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[</span><br><span class="line">  [</span><br><span class="line">    <span class="string">"朝代的数量最少的都城，朝代的人口数量的最大值"</span>,</span><br><span class="line">    <span class="string">"朝代"</span>,</span><br><span class="line">    <span class="string">"汽车公司|汽车公司中国事业部|汽车产品|车型+*|词条id|名称|所属国家|经营范围|母公司|主要车系数量|世界500强排名|主要荣誉|公司id|中国事业部名称|位于城市|所属省份|总投资金额|负责产品数量|主要产品|词条id|名称|推出时间|车型|车款数量|保值率|生产公司id|词条id|名称|排量|油耗|售价|所属产品id|关注指数|累计销量|安全排行|性能排行|油耗排行|空间排行|舒适排行"</span>,</span><br><span class="line">    <span class="string">"0"</span></span><br><span class="line">  ],</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<p><a href="/uploads/455b84cc96b59d32b53d3cafcac58a54/for_baseline.rar">for_baseline.rar</a></p>
+<h2 id="方案一：baseline"><a href="#方案一：baseline" class="headerlink" title="方案一：baseline"></a>方案一：baseline</h2><p>epoch 4:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">              precision    recall  f1-score   support</span><br><span class="line"></span><br><span class="line">           0     0.9971    0.9994    0.9983      1720</span><br><span class="line">           1     0.9990    0.9949    0.9969       983</span><br><span class="line"></span><br><span class="line">    accuracy                         0.9978      2703</span><br><span class="line">   macro avg     0.9980    0.9972    0.9976      2703</span><br><span class="line">weighted avg     0.9978    0.9978    0.9978      2703</span><br></pre></td></tr></table></figure>
+<p>Todo：question直接选择db_id</p>
+<h2 id="方案二：GCN"><a href="#方案二：GCN" class="headerlink" title="方案二：GCN"></a>方案二：GCN</h2><h4 id="1-Question-schema-word-embedding-avg"><a href="#1-Question-schema-word-embedding-avg" class="headerlink" title="1. Question+schema word embedding avg"></a>1. Question+schema word embedding avg</h4><p>方案描述：</p>
+<p>Step1. 对每个schema构建邻接矩阵<code>A</code>和特征矩阵<code>X</code>，其中：</p>
+<ul>
+<li>邻接矩阵A：<ol>
+<li>根据<code>foreign_keys</code>的table之间信息，构建shape为<code>[table_nums, table_name]</code>的矩阵</li>
+<li>对每个节点添加自链接</li>
+<li>计算度矩阵以及<script type="math/tex">D^{-\frac{1}{2}}\tilde{A}D^{-\frac{1}{2}}</script></li>
+</ol>
+</li>
+<li>特征矩阵X：<ol>
+<li>对于每个table所包含的column，计算<code>column_name</code>每个字的word embedding并相加求平均，当作table对应的特征（<strong>todo：忘了加上table_name的embedding了</strong>）</li>
+<li>构建成shape为<code>[table_nums, word_embedding_dim]</code>的矩阵</li>
+</ol>
+</li>
+<li>为了方便写代码，将以上内容离线处理好并用pickle保存，等训练的时候加载</li>
+</ul>
+<p>Step2. 模型部分</p>
+<p>对Question用bert并用[CLS]获取句子表示，根据db_id获取对应的邻接矩阵和特征矩阵。</p>
+<p>这里由于每个db的矩阵的维度都不同，没法用<code>torch.tensor</code>包装成batch传入，因此，这里先传入一个batch的db_id，然后在<code>forward</code>函数里进行操作。</p>
+<p>具体地，</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">schema_A, schema_X = schema_a_x[db_name]</span><br><span class="line">schema_A = torch.tensor(schema_A, dtype=torch.float32)</span><br><span class="line">schema_X = torch.tensor(schema_X, dtype=torch.float32)</span><br><span class="line">ax = torch.mm(schema_A, schema_X).cuda()</span><br><span class="line">axw = torch.mm(ax, self.W_0)</span><br><span class="line"></span><br><span class="line">axw_ping = torch.reshape(axw, (<span class="number">-1</span>, )) <span class="comment"># 拉平然后接一个linear</span></span><br><span class="line"><span class="comment"># 注这里linear是在init里进行初始化的：self.linears = [nn.Linear(i * 100, 100).cuda() for i in range(1, 20)]</span></span><br><span class="line">tab_nums = int(axw_ping.shape[<span class="number">0</span>] / <span class="number">100</span>)</span><br><span class="line"><span class="keyword">if</span> tab_nums <span class="keyword">in</span> list(range(<span class="number">1</span>, <span class="number">20</span>)):</span><br><span class="line">    _t = self.linears[tab_nums <span class="number">-1</span>]</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    _t = nn.Linear(axw_ping.shape[<span class="number">0</span>], <span class="number">100</span>).cuda()</span><br><span class="line"></span><br><span class="line">_tt = _t(axw_ping)</span><br><span class="line">_relu = F.relu(_tt)</span><br><span class="line">_dropout = F.dropout(_relu)</span><br><span class="line">axw_final.append(_dropout)</span><br></pre></td></tr></table></figure>
+<p>然后将question和schema的embedding进行拼接再接到传统的流程上即可</p>
+<p>但是目前来看训练过程不能收敛，还在找原因</p>
+<hr>
+<p><strong>2022年3月8日：有问题，没有收敛</strong></p>
+<h4 id="2-Question-schema-embedding-use-BERT"><a href="#2-Question-schema-embedding-use-BERT" class="headerlink" title="2. Question+schema embedding use BERT"></a>2. Question+schema embedding use BERT</h4><p>刚刚Schema部分使用的是静态的word embedding，这次考虑用bert进行生成</p>
+<p>方案描述如下：</p>
+<p>Question获取表示的部分不变，对于特征矩阵X的构建则利用bert的能力：</p>
+<ol>
+<li>将每个column name转为token以及input_ids等，然后通过bert获取embedding，再通过<code>torch.squeeze(_bert_output[:, 0:1, :], dim=1)</code>获取表示，用于表示一个table的内容，这样将构建<code>[table_nums, 768]</code>维度的矩阵</li>
+<li>按照上面的流程进行处理</li>
+</ol>
+<hr>
+<p><strong>2022年3月8日：有问题，没有收敛</strong></p>
+<h4 id="3-细化节点"><a href="#3-细化节点" class="headerlink" title="3. 细化节点"></a>3. 细化节点</h4><p>上面的方案中，以table为单位设定节点，对于不同table中的外键column，将链接连在table上，因此邻接矩阵的shape往往很小，然而特征矩阵的构成需要联合每个table所有column的embedding属性，用bert获取相对还算平和可以取拼接后的<code>[CLS]</code>位置变量，若是静态embedding则只能求平均了，这一点还是略有点吃亏</p>
+<h4 id="4-一个特殊的想法"><a href="#4-一个特殊的想法" class="headerlink" title="4. 一个特殊的想法"></a>4. 一个特殊的想法</h4><p>考虑到问题在于table的schema shape不统一，如果有一种方法，可以设定为 Question+固定schema进行二分类，然后将schema的embedding输出当作词典</p>
+<p>2022年3月7日尝试：构建单个schema的二分类数据，还是不收敛，应该是有其他问题</p>
+<p><strong>2022年3月8日：有问题，没有收敛</strong></p>
+<p><strong>2022年3月9日：用question+schema column句子拼接的方式做最基础的二分类，不能收敛，所以应该是这种构建数据集的方式有问题。既然这样的话，固定schema进行二元分类的方案基本上被否决了</strong></p>
+<h5 id="5-GCN节点：从table为单位到-T-C-为单位"><a href="#5-GCN节点：从table为单位到-T-C-为单位" class="headerlink" title="5. GCN节点：从table为单位到{T, C}为单位"></a>5. GCN节点：从table为单位到{T, C}为单位</h5><p>以table name和column name为节点，会领图的节点数增加，这样没发再用<code>[nn.Linear() for _ in range(20)]</code>了，因此还是在二元分类的数据上实现，只不过把邻接矩阵和特征矩阵的逻辑进行修改</p>
+<h5 id="6-句子-schema-embedding-来自于nn-Embedding"><a href="#6-句子-schema-embedding-来自于nn-Embedding" class="headerlink" title="6. 句子+schema embedding(来自于nn.Embedding)"></a>6. 句子+schema embedding(来自于nn.Embedding)</h5><ul>
+<li>随机初始化</li>
+<li>gcn初始化</li>
+</ul>
+<h5 id="7-暂时不考虑外键关联，用treelstm进行编码"><a href="#7-暂时不考虑外键关联，用treelstm进行编码" class="headerlink" title="7. 暂时不考虑外键关联，用treelstm进行编码"></a>7. 暂时不考虑外键关联，用treelstm进行编码</h5><h2 id="阶段性总结"><a href="#阶段性总结" class="headerlink" title="阶段性总结"></a>阶段性总结</h2><ul>
+<li>构建图的方式想到两种：<ol>
+<li>以table为节点，外键的连接都当作table上的<ul>
+<li>优点：生成的邻接矩阵、度矩阵等较小</li>
+<li>缺点：对于每个table的所有column和相关信息，需要合成一个向量放置于特征矩阵的一行</li>
+</ul>
+</li>
+<li>以table、column、root为节点<ul>
+<li>优点：信息保留得更全</li>
+<li>缺点：不同schema差别更大了</li>
+</ul>
+</li>
+</ol>
+</li>
+<li>对于计算完<code>awx</code>后的矩阵shape不一致问题，若shape较小可以批量一个<code>[nn.Linear(i * 100, 100).cuda() for i in range(1, 20)]</code></li>
+<li>对于计算完的awx，还可以考虑用个cnn去卷一下</li>
+</ul>
+<p>所以，目前一个最大的困难就是：<strong>对于不定长的schema，咋写</strong></p>
+<h2 id="随手记"><a href="#随手记" class="headerlink" title="随手记"></a>随手记</h2><ul>
+<li>情况一：多个数据库，每个数据库的table不是很多 | 需要对多个db进行筛选，类似于dusql</li>
+<li>情况二：单个或少量数据库，每个库的table非常多 | 需要对单个库的table进行筛选，类似于电网的数据</li>
+<li>情况三：情况1+2</li>
+</ul>
+<p>在二元分类的数据集中，对于schema来说，应该分为三类：</p>
+<ol>
+<li>在训练集中出现，且有question与其匹配</li>
+<li>在训练集中出现，没有question匹配（<code>Q+S=False</code>）</li>
+<li>没有在训练集中出现</li>
+</ol>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/NLP/">NLP</a><a href="/tags/NL2SQL/">NL2SQL</a>
+  </div>
+
+</div>
+
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2023/08/24/NL2SQL小结/" title="【NL2SQL】小结及对其它领域迁移的可行性分析与探索">
+  <span>
+  【NL2SQL】小结及对其它领域迁移的可行性分析与探索</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2023/08/24/NL2SQL电网比赛/" title="【NL2SQL】某个挑战赛踩坑尝试">
+ <span>【NL2SQL】某个挑战赛踩坑尝试
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+<div id="authorInfo">
+	
+		<div class="author-img"></div>		
+	
+	<div class="social-info">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:candnes@sina.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+
+	</div>
+</div>
+
+  
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/NLP/" title="NLP">NLP<sup>17</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Coreference-Resolution/" title="Coreference Resolution">Coreference Resolution<sup>8</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/NL2SQL/" title="NL2SQL">NL2SQL<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/踩坑/" title="踩坑">踩坑<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/学习/" title="学习">学习<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/GNN/" title="GNN">GNN<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/多模态/" title="多模态">多模态<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/爬虫/" title="爬虫">爬虫<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Algorithm/" title="Algorithm">Algorithm<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/python/" title="python">python<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/深度学习/" title="深度学习">深度学习<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+		
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/hsihohuang/kiddochan" target="_blank" title="Kiddochan">Kiddochan</a> © 2023 
+		
+		<a href="/about" target="_blank" title="Yuanqing Zhu">Yuanqing Zhu</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

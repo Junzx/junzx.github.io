@@ -1,0 +1,835 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  
+    <title>【Coref】中文共指消解问题研究 | Blog of YQ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Yuanqing Zhu">
+    
+
+    
+    <meta name="description" content="从0构建指代消解系统">
+<meta name="keywords" content="Coreference Resolution,NLP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【Coref】中文共指消解问题研究">
+<meta property="og:url" content="http://yoursite.com/2019/05/01/coref-中文共指消解问题研究/index.html">
+<meta property="og:site_name" content="Blog of YQ">
+<meta property="og:description" content="从0构建指代消解系统">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2019/05/01/coref-中文共指消解问题研究/中文共指消解问题研究/系统概述-规则.jpg">
+<meta property="og:image" content="http://yoursite.com/2019/05/01/coref-中文共指消解问题研究/中文共指消解问题研究/严格中心词匹配-1.jpg">
+<meta property="og:updated_time" content="2023-08-25T06:11:48.778Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="【Coref】中文共指消解问题研究">
+<meta name="twitter:description" content="从0构建指代消解系统">
+<meta name="twitter:image" content="http://yoursite.com/2019/05/01/coref-中文共指消解问题研究/中文共指消解问题研究/系统概述-规则.jpg">
+
+    
+    <link rel="alternative" href="atom.xml" title="Blog of YQ" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/icon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="//img/IMG_8752.JPG">
+    <link rel="apple-touch-icon-precomposed" href="//img/IMG_8752.JPG">
+    
+    <link rel="stylesheet" href="/css/style.css"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+</html>
+  <body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><header>
+      
+<div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Blog of YQ">Blog of YQ</a></h1>
+				<h2 class="blog-motto">this is subtitle :)</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope="" itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2019/05/01/coref-中文共指消解问题研究/" title="【Coref】中文共指消解问题研究" itemprop="url">【Coref】中文共指消解问题研究</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Yuanqing Zhu" target="_blank" itemprop="author">Yuanqing Zhu</a>
+		
+  </p><p class="article-time">
+    <time datetime="2019-05-01T08:34:50.000Z" itemprop="datePublished"> 发表于 2019-05-01</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=default"></script>
+
+<h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><h2 id="什么是指代？"><a href="#什么是指代？" class="headerlink" title="什么是指代？"></a>什么是指代？</h2><p><strong>指代</strong>（coreference）为语言学中为了避免已经出现的字词重复出现在文章的句子上，导致语句结构过于赘述和语意不够清晰，所以使用<u>代词</u>（pronouns）或是<u>名词</u>（nouns）来代替已经出现过的字词。</p>
+<p>例子：</p>
+<ol>
+<li><font color="RED">特朗普</font>访问中国，这是<font color="RED">美国总统</font>第n次来华访问。</li>
+<li><font color="RED">小明</font>身长八尺，<font color="RED">他</font>学习成绩优异，深得老师同学们的喜欢。</li>
+</ol>
+<p><strong>概念一：表述、实体</strong></p>
+<p>在以上的例子中，<font color="RED">红色</font>字体标注的词语，我们称为<strong><font color="BLUE">表述</font></strong>，对应真实世界中的<strong><font color="BLUE">实体</font></strong>。</p>
+<p><font color="BLUE">表述</font>与<font color="BLUE">实体</font>是在指代消解问题中常见的术语。<font color="BLUE">实体（Entity）</font>是存在于客观世界的某种事物，是一种切实存在的概念。文本中会出现很多的名词短语以及代词，这些句子成分被称作<font color="BLUE">表述（Mention）</font>，是一个事物在文本中的一种体现。</p>
+<blockquote>
+<p>In coreference resolution, an entity is an object or set of objects in the world, while a mention is the textual reference to an entity (Doddington et al., 2004).</p>
+</blockquote>
+<p><strong>概念二：指代、回指、共指</strong></p>
+<p>指代关系按照表述是否依赖上下文可以分为回指和共指。我们通常讨论的指代关系主要是指<strong>共指</strong> ，即考虑表述之间是否指向同一个实体。在这个问题中，<u>回指</u>通常是针对代词而言，<u>是一种特殊的共指关系</u>。</p>
+<p><strong><font color="RED">因此</font></strong>，在下文中，我们可能会混用“<font color="RED">共指</font>”和“<font color="RED">指代</font>”两个描述方法，但是我们想表达的意思是相同的。</p>
+<h2 id="什么是指代消解？"><a href="#什么是指代消解？" class="headerlink" title="什么是指代消解？"></a>什么是指代消解？</h2><p><strong>指代消解</strong>即为文中的表述确定其在真实世界中所指向实体的过程.</p>
+<blockquote>
+<p>Coreference resolution, the task of identifying which mentions in a text refer to the same real world entity, is fundamentally a clustering problem.</p>
+</blockquote>
+<p>指代消解任务通常分为两步：</p>
+<ul>
+<li>第一步：表述提取，也称待消解项识别。即从文本中找到下一步任务中待处理的候选表述。</li>
+<li>第二步：指代消解。对提取的候选表述集合进行分析处理，判断它们的指代结果。</li>
+</ul>
+<h2 id="为什么要研究指代消解？"><a href="#为什么要研究指代消解？" class="headerlink" title="为什么要研究指代消解？"></a>为什么要研究指代消解？</h2><ul>
+<li>在机器翻译问题中，对于代词’they’可以通过分析词语的指代关系翻译为“他们”或者“她们”，从而使翻译更加准确。</li>
+<li>在文本摘要问题中，适当采用代词对某些词语进行替换，提升可读性。</li>
+<li>在知识图谱领域中，可以参考指代消解的方法，将知识融合问题与消解问题类比，即对于同一实体的词语单元合并为同一个cluster</li>
+<li>另外，文本理解是人工智能领域一个重要的技术难点。国务院在2017年发布的《新一代人工智能发展规划》中明确提出，要重点突破自然语言的语法逻辑以及深度语义分析的核心技术，将对中文文本的研究提高到国家战略层面。</li>
+</ul>
+<p>结论：指代消解在实际的生产生活中有着广泛应用。</p>
+<h2 id="指代消解常见方法有哪些？"><a href="#指代消解常见方法有哪些？" class="headerlink" title="指代消解常见方法有哪些？"></a>指代消解常见方法有哪些？</h2><ul>
+<li>传统：<ul>
+<li>基于句法树或语言规则的分析</li>
+</ul>
+</li>
+<li>机器学习：<ul>
+<li>分类：将表述与表述之间是否存在指代关系考虑为二分类问题</li>
+<li>聚类：将每个表述考虑为一个实体，共指消解的过程可以理解为实体类(cluster)的聚类过程</li>
+</ul>
+</li>
+<li>深度学习：<ul>
+<li>基于端到端的思想，构建深度神经网络完成共指消解。</li>
+</ul>
+</li>
+</ul>
+<h2 id="如何评价指代消解的效果？"><a href="#如何评价指代消解的效果？" class="headerlink" title="如何评价指代消解的效果？"></a>如何评价指代消解的效果？</h2><p></p><p></p>
+<p><font color="RED">例</font>：给出标准的划分和结果划分。</p>
+<center>![image](/中文共指消解问题研究/3.JPG)</center>
+
+
+<pre><code>Label={a,b,c},{d,e},{f,g,h} 
+Resolution={a,b},{c,d,e},{f,g,i}
+其中abc表示一个表述，用大括号表示一个实体。处于同一个大括号的表述属于同一实体。
+</code></pre><h3 id="MUC"><a href="#MUC" class="headerlink" title="MUC"></a>MUC</h3><ul>
+<li>Precision:指消解后的结果中，正确处理的表述占实际处理的表述的百分比</li>
+<li>Recall:描述消解结果中正确处理的表述占数据集中所有待消解表述的百分比</li>
+</ul>
+<script type="math/tex; mode=display">Precision=\frac{\sum_{i}^{N_r}(|R_i|-p(R_i))}{\sum_{i}^{N_r}(|R_i|-1)}</script><script type="math/tex; mode=display">Recall=\frac{\sum_{i}^{N_l}(|L_i|-p(L_i))}{\sum_{i}^{N_l}(|L_i|-1)}</script><p>其中\(L_i\)表示标记数据中第i个实体的情况，\(R_i\)表示消解结果中第\(i\)个实体。‘|’表示当前实体所包含的表述数量。计算准确率的公式中的\(p(R_i\)是指消解结果中第\(i\)个实体中实际包含了多少个真实的实体，其中没有出现在标记数据中的独立表述，我们认为它是独立的一个实体。计算召回率的公式中的\(p(L_i)\)是指标记数据中的第\(i\)个实体被划分为多少个子类。在下图中我们用实线椭圆表示标记数据的实体类，用虚线椭圆表示消解结果中的实体类。</p>
+<center>![image](/中文共指消解问题研究/4.JPG)</center>
+
+<p>有：</p>
+<script type="math/tex; mode=display">Precision=\frac{(2-1)+(3-2)+(3-2)}{(2-1)+(3-1)+(3-1)}=0.6</script><script type="math/tex; mode=display">Recall=\frac{(3-2)+(2-1)+(3-2)}{(3-1)+(2-1)+(3-1)}=0.6</script><h3 id="BCUB"><a href="#BCUB" class="headerlink" title="BCUB"></a>BCUB</h3><script type="math/tex; mode=display">Precision=\frac{\sum_{i}^{N_l} \sum_{j}^{N_r}\frac{|{L_i}\cap{R_j}|^2}{|L_i|}}{\sum_{j}^{N_r}{|L_i|}}</script><script type="math/tex; mode=display">Recall=\frac{\sum_{i}^{N_l} \sum_{j}^{N_r}\frac{|{L_i}\cap{R_j}|^2}{|R_j|}}{\sum_{j}^{N_r}{|R_j|}}</script><h2 id="如何构建完整的指代消解系统"><a href="#如何构建完整的指代消解系统" class="headerlink" title="如何构建完整的指代消解系统"></a>如何构建完整的指代消解系统</h2><p>下图是一个基于多轮处理的指代消解系统的结构图。</p>
+<center>![image](/中文共指消解问题研究/系统结构图.png)</center>
+
+<p>处理步骤：</p>
+<ol>
+<li>预处理：首先对输入的文本进行预处理，完成一些基本的词性标注，构建句法树等工作。</li>
+<li>表述提取：然后将预处理好的数据传入表述提取部分，通过一定的方法获取候选表述。</li>
+<li>指代消解：接着将提取的待处理表述集合传递给指代消解部分，完成一个处理流过程。</li>
+</ol>
+<h3 id="表述提取"><a href="#表述提取" class="headerlink" title="表述提取"></a>表述提取</h3><p>对文本进行基本处理，提取其中的名词短语。</p>
+<h3 id="基于多轮规则的指代消解"><a href="#基于多轮规则的指代消解" class="headerlink" title="基于多轮规则的指代消解"></a>基于多轮规则的指代消解</h3><p>在指代消解部分中我们选择了下图中多个消解规则进行组合，构成多轮规则处理的指代消解系统。其中每一轮我们使用一个消解规则。</p>
+<center><img src="/2019/05/01/coref-中文共指消解问题研究/中文共指消解问题研究/系统概述-规则.jpg" width="50%" height="50%"></center>
+
+<p>对于单个规则我们采用如下的方法进行处理：</p>
+<center>![image](/中文共指消解问题研究/规则-单个规则流程图.jpg)</center>
+
+<p>举例进行解释，假设我们有candidate_mentions\(=[m_1, m_2, m_3, m_4, m_5, m_6, m_7]\)个表述，我们的处理方式为：</p>
+<pre><code>for mention in candiate_mentions: # 从m_2开始，每次选择一个
+    候选表述list = get_candidate(mention)    # 选择mention前面的表述作为候选集合
+    for 候选表述 in 候选表述list：                # 从候选表述中选择一个表述
+        if 候选表述 coref with mention:         # 如果这个候选与mention共指
+            set_coref(候选表述，mention)
+            break                            # 如果找到了，那么则停止判断
+</code></pre><h4 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h4><ol>
+<li><p>基于文本结构分析的规则：</p>
+<ul>
+<li>在这类规则中，主要考察表述之间的位置关系以及文本是否匹配等信息，从而判断表述之间是否存在共指关系。</li>
+<li><p>例子：</p>
+<ul>
+<li>目前 ， <strong>十 个 农业 高 新 技术 开发 示范区</strong> ， 已 划出 了 十八万 亩 土地 作为 中心 示范区 。 为 加快 示范区 的 建设 ， ·······。 近 两 年 来 ， <strong>十 个 农业 高 新 技术 开发 示范区</strong> 已 推广 农业 新 品种 上 百 个 </li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>基于中心词分析的规则：</p>
+<ul>
+<li>在这类规则中，针对表述的中心词设计了多个约束条件。</li>
+<li>例如：<ul>
+<li>另外 许运宏 还 要求 中国 银行 宁波 分行 等 单位 为 经营 不善 的 <strong>宁波 五洲 有限 公司</strong> 分别 贷款 、 借款 共计 人民币 ２５００多万 元 、 美元 ５４０万 元 ， 全部 贷款 和 绝大部分 借款 因 <strong>五洲 公司</strong> 资 不 抵 债 无法 收回 。</li>
+<li>针对 这 种 情况 ， 本溪市 对 <strong>养老 保险金</strong> 征缴 和 方法 体制 做 了 重大 调整 ， 由 过去 的 实行 差额 收支 改为 全额 收支 ， <strong>社会 养老 保险金</strong> 统一 征缴 ， 由 银行 直接 发放 ， 严格 控制 养老 保险 统筹 以为 项目 的 支出 。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>代词消解规则：</p>
+<ul>
+<li>对于一二人称：通常出现在对话中，因此先定位说话的人，然后判断一二人称和说话者的指代关系。</li>
+<li>对于第三人称：对于每个表述设计了多个属性。如果第三人称代词和它的候选表述具有相同的属性且距离相近，认为它们存在指代关系。</li>
+<li>例如：<ul>
+<li>早些时候 菲律宾 武装 部队 总参谋长 雷耶斯 在 记者 招待会 上 说 ： 允许 <strong>埃斯特拉达</strong> 和 <strong>他</strong> 的 家人 体面 的 离开</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>语义规则：</p>
+<ul>
+<li>考虑经过之前的各个规则后仍然没有被处理的表述，利用表述的相似度和其他属性，在保证一定准确率的情况下提高召回率。</li>
+<li>例如：<ul>
+<li>你 知道 淡水 和 八里 之间 要 盖 <strong>一 座 淡江 大桥</strong> 吗 ？ 这么 美丽 又 有 历史感 的 地方 ， 就 这样 凭空 盖起<strong> 一 座 大桥</strong> ， 还 说 上面 要 有 旋转 咖啡厅 呢 ！</li>
+<li>啊 , 我们 换 了 <strong>一 部 新 车</strong> . 嗯 . 我 不 知道 我 跟 你 讲 过 没有 ? 我 那 部 车 , 我们 卖 掉 了 , 又 重 买 了 <strong>一 部 新 的</strong> .</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h4 id="1-字符串匹配规则"><a href="#1-字符串匹配规则" class="headerlink" title="1. 字符串匹配规则"></a>1. 字符串匹配规则</h4><p>如果两个候选表述的<u>修饰语</u>和<u>限定词</u>相同，且两个表述<u>文本</u>相同，那么这两个表述存在指代关系。</p>
+<p>设计意义:</p>
+<ol>
+<li><p>约束修饰语和限定词</p>
+<p> 考察句子</p>
+<pre><code> 小明的老师在闲暇时也会教小李，这也给小李的老师减轻了工作负担。
+</code></pre><p> 其中包含的表述有</p>
+<pre><code> {小明的老师，小明，老师，小李的老师，小李，老师}
+</code></pre><p> 我们可以看到在表述集合中有两个<u>文本内容</u>完全相同的表述<strong>“老师”</strong>，但是这两个表述并不指代同一人。对于第一个表述“老师”而言，它的修饰语为<u>“小明的”</u>，对于第二个表述“老师”而言，它的修饰语为<u>“小李的”</u>。虽然表述的文本内容相同，但是因为修饰语不相同，所以这两个表述不存在指代关系。</p>
+</li>
+<li><p>约束文本相同</p>
+<p> 考察两个表述：</p>
+<pre><code> “凳子”、“茶具”
+</code></pre><p> 词语“凳子”、“茶具”作为表述它们是独立的词语，但是在文本中他们仍然可能存在修饰成分。</p>
+<p> 例如由<strong>“这精美的”</strong>构成名词短语</p>
+<pre><code> “这精美的凳子”、“这精美的茶具”
+</code></pre><p> 可以很清楚的看到，这两个表述具有相同的修饰语和限定词，但是它们本身就是不同的事物。</p>
+</li>
+</ol>
+<h4 id="2-词语结构匹配规则"><a href="#2-词语结构匹配规则" class="headerlink" title="2. 词语结构匹配规则"></a>2. 词语结构匹配规则</h4><p>针对表述之间所处的位置关系和句子中扮演的角色进行分析。设计了以下的约束条件，如果满足其中某一种条件，那么两个表述之间存在指代关系。</p>
+<ol>
+<li><p>同位语关系</p>
+<p> 同位语是指一个短语对它周围的某个名词或者代词起到补充解释的作用，并且空间距离相近，语义相关。</p>
+<p> 例如：</p>
+<pre><code> 小明，三年二班的班长。
+</code></pre></li>
+<li><p>谓语主格</p>
+<p> 谓语主格是指句子中“<u>句子成分1</u>+<strong>是</strong>+<u>句子成分2</u>”结构的表达方式，通常句子成分2作为成分1的补充说明。</p>
+<p> 例如：</p>
+<pre><code> “在学术研讨会上，人们提出人工智能是社会新的发展方向”。
+</code></pre><p> 这其中<u>“人工智能”</u>和<u>“社会新的发展方向”</u>就处于由<strong>“是”</strong>进行连接的谓语主格结构中。</p>
+</li>
+<li><p>缩写关系</p>
+<p> 例如</p>
+<pre><code> “美联储”、“美国联邦储备局”
+</code></pre><p> 生成缩写的方法：</p>
+<pre><code> “中国篮球协会”→“中国/篮球/协会”→“中篮联”
+</code></pre></li>
+</ol>
+<h4 id="3-中心词严格匹配规则"><a href="#3-中心词严格匹配规则" class="headerlink" title="3. 中心词严格匹配规则"></a>3. 中心词严格匹配规则</h4><p><strong>中心词</strong>是指短语中能够简单概括短语含义的部分。例如“北京大学”，其中心词就是<u>大学</u>；“中华人民共和国教育部”，其中心词则为<u>“教育部”</u>。</p>
+<p>在这部分内容中，我们设定了<strong>4个约束条件</strong>，然后组合形成了<strong>3个策略</strong>。</p>
+<h5 id="约束条件"><a href="#约束条件" class="headerlink" title="约束条件"></a>约束条件</h5><p><strong>约束条件1：</strong> 表述中心词是否出现在候选表述的中心词集合中</p>
+<pre><code>输入：待处理的表述为m_i；候选表述集合C={m_1,m_2…,m_(i-1)}
+过程：
+1:    根据当时的指代情况对候选表述进行实体类的划分，得到E={E_j,j≤i-1}
+2:    找到m_i对应的中心词h_i
+3:    for m_j∈C:
+4:        选择m_j对应的E_j
+5:        对于E_j中的表述找到对应的中心词构成集合H&#39;_j
+6:        if h_i in H&#39;_j
+7:            True
+8:        else
+9:            False
+10:        end if
+11:    end for
+
+输出：是否满足这项约束
+</code></pre><p>举例进行说明：</p>
+<center><img src="/2019/05/01/coref-中文共指消解问题研究/中文共指消解问题研究/严格中心词匹配-1.jpg" width="50%" height="50%"></center>
+
+<p>图中的弧线表示两个表述存在指代关系。假设我们待处理的表述为\(m_6\)，根据规则我们选择出现在它前面的表述作为候选表述集合\(C={m_1,m_2,m_3,m_4,m_5}\)。对\(m_6\)找先行词的过程即是然后依次对\(m_i\in{C}\)与\(m_6\)进行判断。在当前的时刻，我们已知\(m_1\)与\(m_7\)共指，\(m_2\)与\(m_3\)共指。</p>
+<p>对于集合C中的表述，我们可以得到候选表述中实体类的划分E={\(E_1=(m_1,m_7 ),E_2=(m_2,m_3 ),E_3=(m_4 ),E_4=(m_5)\)}。因此可以得到每个实体类对应的中心词集合，得到\(H’={(h’_1,h’_7 ),(h’_2,h’_3 ),(h’_4 ),(h’_5 )}\)。</p>
+<p>因此，考察\(m_6\)和\(m_1\)是否指代使用此算法即使求\(h_6\)是否包含在\(H’_1=(h’_1,h’_7)\)中；对\(m_6\)和\(m_2\)使用此算法即使求\(h_6\)是否包含在\(H’_2=(h’_2,h’_3)\)中；对其他的候选表述使用类似的操作。</p>
+<p>用实际的例子进一步进行讲解。</p>
+<p>假设处理表述<strong>“上海”</strong>，它的中心词即为它<u>本身</u>。</p>
+<p>它对应的<u>候选表述</u>有：</p>
+<pre><code>{中国上海；一个发达的城市}。
+</code></pre><p>根据<u>现有的指代情况</u>有：</p>
+<pre><code>{“中国上海”：(中国上海，沪)，“一个发达的城市”： (一个发达的城市)}
+</code></pre><p>因此可以得到的<u>中心词集合</u>：</p>
+<pre><code>{（上海，沪），（城市）}
+</code></pre><p>当我们对“上海”和候选表述“中国上海”进行判别时，我们将考察“上海”的中心词是否在（上海，沪）中。</p>
+<p>当我们对“上海”和候选表述“一个发达的城市”判别时，我们将考察“上海”的中心词是否在（城市）中。</p>
+<p><strong>约束条件2:</strong> 非停用字包含</p>
+<p>在这项约束中，我们要求表述所包含的没有出现在停用词集合中的字，必须包含在由候选表述的中未出现在停用词的字构成的集合中。</p>
+<p>在项目中，我们维护了一个常用停用词列表。假设有停用词词表S，现有待处理的表述\(m_i\)和它的候选表述\(c_i\)，其中\(m_i=(w_1,w_2,…,w_n ),c_i=(w’_1,w’_2,…,w’_n )\)，w和w’分别表示构成表述的单字。因此对于表述m_i，我们求取它和S的差集，并将结果定义为S’。对于候选表述\(c_i\)求取它和S的差集并将结果定义为S’’。那么如果\(S’\subseteq{S’’}\)，那么我们认为满足此项约束。</p>
+<p>例如考察表述：</p>
+<pre><code>“一个发展中的城市”、“沿海地区一个经济发达的城市”
+</code></pre><p>删除表述和候选表述中停用词后，得到的集合存在包含关系，因此<u>满足</u>此项约束。</p>
+<p>而对于表述：</p>
+<pre><code>“一个发展中的城市”、“沿海地区一个发达的城市”
+</code></pre><p>这两个表述虽然具有相同的中心词，但是除去停用词后产生的集合不满足包含的关系，因此<u>不满足</u>此项约束。</p>
+<p><strong>约束条件3：</strong>表述修饰语是否出现在候选表述修饰语中</p>
+<p>如果当前待处理的表述的修饰语包含在候选表述的修饰语中，则满足此项约束。</p>
+<p>例如考察表述：</p>
+<pre><code>发达的上海
+</code></pre><p>以及它的候选表述：</p>
+<pre><code>一个发达的城市
+</code></pre><p>我们可以得到候选表述修饰语 <u>“发达”</u>，因此表述“发达的上海”的修饰语包含在候选表述的修饰语中，两个表述满足此项约束。</p>
+<p><strong>约束条件4：</strong>表述间是否存在子结构</p>
+<p>将考察两个表述是否具有互相包含的关系</p>
+<h5 id="策略"><a href="#策略" class="headerlink" title="策略"></a>策略</h5><p><strong>策略1：</strong> 中心词严格匹配——严格策略</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">条件</th>
+<th style="text-align:center">值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">当前表述与其候选表述是否存在相同中心词</td>
+<td style="text-align:center">True</td>
+</tr>
+<tr>
+<td style="text-align:center">表述中心词是否出现在候选表述的中心词集合中</td>
+<td style="text-align:center">True</td>
+</tr>
+<tr>
+<td style="text-align:center">是否满足非停用字包含条件</td>
+<td style="text-align:center">True</td>
+</tr>
+<tr>
+<td style="text-align:center">表述修饰语是否出现在候选表述修饰语中</td>
+<td style="text-align:center">True</td>
+</tr>
+<tr>
+<td style="text-align:center">表述间是否存在子结构</td>
+<td style="text-align:center">False</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>策略2：</strong> 中心词严格匹配——中间策略</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">条件</th>
+<th style="text-align:center">值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">当前表述与其候选表述是否存在相同中心词</td>
+<td style="text-align:center">True</td>
+</tr>
+<tr>
+<td style="text-align:center">表述中心词是否出现在候选表述的中心词集合中</td>
+<td style="text-align:center">True</td>
+</tr>
+<tr>
+<td style="text-align:center">是否满足非停用字包含条件</td>
+<td style="text-align:center">True</td>
+</tr>
+<tr>
+<td style="text-align:center">表述间是否存在子结构</td>
+<td style="text-align:center">False</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>策略3：</strong> 中心词严格匹配——宽松策略</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">条件</th>
+<th style="text-align:center">值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">当前表述与其候选表述是否存在相同中心词</td>
+<td style="text-align:center">True</td>
+</tr>
+<tr>
+<td style="text-align:center">表述中心词是否出现在候选表述的中心词集合中</td>
+<td style="text-align:center">True</td>
+</tr>
+<tr>
+<td style="text-align:center">表述修饰语是否出现在候选表述修饰语中</td>
+<td style="text-align:center">True</td>
+</tr>
+<tr>
+<td style="text-align:center">表述间是否存在子结构</td>
+<td style="text-align:center">False</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="4-中心词宽松匹配规则"><a href="#4-中心词宽松匹配规则" class="headerlink" title="4.中心词宽松匹配规则"></a>4.中心词宽松匹配规则</h4><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">条件</th>
+<th style="text-align:center">值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">表述中心词是否包含于候选表述中心词集合中</td>
+<td style="text-align:center">True</td>
+</tr>
+<tr>
+<td style="text-align:center">表述和候选表述是否具有相同的命名实体标签</td>
+<td style="text-align:center">True</td>
+</tr>
+<tr>
+<td style="text-align:center">是否满足非停用字包含条件</td>
+<td style="text-align:center">True</td>
+</tr>
+<tr>
+<td style="text-align:center">表述间是否存在子结构</td>
+<td style="text-align:center">False</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="5-专有名词中心词匹配规则"><a href="#5-专有名词中心词匹配规则" class="headerlink" title="5. 专有名词中心词匹配规则"></a>5. 专有名词中心词匹配规则</h4><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">条件</th>
+<th style="text-align:center">值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">是否均被标记为命名实体</td>
+<td style="text-align:center">True</td>
+</tr>
+<tr>
+<td style="text-align:center">是否有相同的命名实体标签</td>
+<td style="text-align:center">True</td>
+</tr>
+<tr>
+<td style="text-align:center">待处理表述中的数量词是否在出现候选表述中</td>
+<td style="text-align:center">True</td>
+</tr>
+<tr>
+<td style="text-align:center">表述间是否存在子结构</td>
+<td style="text-align:center">False</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="6-第一二人称代词消解规则"><a href="#6-第一二人称代词消解规则" class="headerlink" title="6. 第一二人称代词消解规则"></a>6. 第一二人称代词消解规则</h4><p>对于一二人称：通常出现在对话中，因此先定位说话的人，然后判断一二人称和说话者的指代关系。</p>
+<h4 id="7-第三人称代词消解规则"><a href="#7-第三人称代词消解规则" class="headerlink" title="7. 第三人称代词消解规则"></a>7. 第三人称代词消解规则</h4><p>对于第三人称：对于每个表述设计了多个属性。如果第三人称代词和它的候选表述具有相同的属性且距离相近，认为它们存在指代关系。</p>
+<h4 id="8-语义规则"><a href="#8-语义规则" class="headerlink" title="8. 语义规则"></a>8. 语义规则</h4><p>考虑经过之前的各个规则后仍然没有被处理的表述，利用表述的相似度和其他属性，在保证一定准确率的情况下提高召回率。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Coreference-Resolution/">Coreference Resolution</a><a href="/tags/NLP/">NLP</a>
+  </div>
+
+</div>
+
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2019/11/22/paper-QAnswering/" title="【论文笔记】Stacked Attention Networks for Image Question Answering">
+  <span>
+  【论文笔记】Stacked Attention Networks for Image Question Answering</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2019/03/06/coref-paper-笔记-multisieve-coreference-papers/" title="【Coref】【论文笔记】多轮处理的指代消解">
+ <span>【Coref】【论文笔记】多轮处理的指代消解
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+<div id="authorInfo">
+	
+		<div class="author-img"></div>		
+	
+	<div class="social-info">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:candnes@sina.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+
+	</div>
+</div>
+
+  
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/NLP/" title="NLP">NLP<sup>17</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Coreference-Resolution/" title="Coreference Resolution">Coreference Resolution<sup>8</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/NL2SQL/" title="NL2SQL">NL2SQL<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/踩坑/" title="踩坑">踩坑<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/学习/" title="学习">学习<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/GNN/" title="GNN">GNN<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/多模态/" title="多模态">多模态<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/爬虫/" title="爬虫">爬虫<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Algorithm/" title="Algorithm">Algorithm<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/python/" title="python">python<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/深度学习/" title="深度学习">深度学习<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+		
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/hsihohuang/kiddochan" target="_blank" title="Kiddochan">Kiddochan</a> © 2023 
+		
+		<a href="/about" target="_blank" title="Yuanqing Zhu">Yuanqing Zhu</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>

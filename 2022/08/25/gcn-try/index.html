@@ -1,0 +1,519 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+  
+    <title>【随手记】一些关于GCN踩坑 | Blog of YQ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Yuanqing Zhu">
+    
+
+    
+    <meta name="description" content="本篇记录了尝试GCN的一些乱七八糟东西">
+<meta name="keywords" content="GNN">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【随手记】一些关于GCN踩坑">
+<meta property="og:url" content="http://yoursite.com/2022/08/25/gcn-try/index.html">
+<meta property="og:site_name" content="Blog of YQ">
+<meta property="og:description" content="本篇记录了尝试GCN的一些乱七八糟东西">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2022/08/25/gcn-try/r1.png">
+<meta property="og:image" content="http://yoursite.com/2022/08/25/gcn-try/r2.png">
+<meta property="og:image" content="http://yoursite.com/2022/08/25/gcn-try/r3.png">
+<meta property="og:updated_time" content="2023-08-25T07:00:18.976Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="【随手记】一些关于GCN踩坑">
+<meta name="twitter:description" content="本篇记录了尝试GCN的一些乱七八糟东西">
+<meta name="twitter:image" content="http://yoursite.com/2022/08/25/gcn-try/r1.png">
+
+    
+    <link rel="alternative" href="atom.xml" title="Blog of YQ" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/icon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="//img/IMG_8752.JPG">
+    <link rel="apple-touch-icon-precomposed" href="//img/IMG_8752.JPG">
+    
+    <link rel="stylesheet" href="/css/style.css"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+</html>
+  <body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><header>
+      
+<div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Blog of YQ">Blog of YQ</a></h1>
+				<h2 class="blog-motto">this is subtitle :)</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索">
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</ul></nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope="" itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2022/08/25/gcn-try/" title="【随手记】一些关于GCN踩坑" itemprop="url">【随手记】一些关于GCN踩坑</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Yuanqing Zhu" target="_blank" itemprop="author">Yuanqing Zhu</a>
+		
+  </p><p class="article-time">
+    <time datetime="2022-08-24T16:00:00.000Z" itemprop="datePublished"> 发表于 2022-08-25</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<p>比较有内容的链接：</p>
+<ul>
+<li><a href="https://zhuanlan.zhihu.com/p/112277874" target="_blank" rel="noopener">2020年，我终于决定入门GCN</a> 有示例代码</li>
+<li><a href="https://www.163.com/dy/article/FP9HA24J0516EPQ9.html#" target="_blank" rel="noopener">GCN图卷积网络入门详解</a> 基本上是下面链接的翻译整合</li>
+<li><a href="http://tkipf.github.io/graph-convolutional-networks/" target="_blank" rel="noopener">GRAPH CONVOLUTIONAL NETWORKS</a> 论文作者写的</li>
+<li><a href="https://zhuanlan.zhihu.com/p/71200936" target="_blank" rel="noopener">何时能懂你的心——图卷积神经网络（GCN）</a></li>
+<li><a href="https://www.experoinc.com/post/node-classification-by-graph-convolutional-network" target="_blank" rel="noopener">https://www.experoinc.com/post/node-classification-by-graph-convolutional-network</a></li>
+</ul>
+<p>这个更好些：<a href="https://zhuanlan.zhihu.com/p/107162772" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/107162772</a></p>
+<hr>
+<p>定义图：<script type="math/tex">G=<V, E></script>，那么相关的有：</p>
+<ul>
+<li>$A$: 邻接矩阵，表示每个节点之间的连接关系。无向图的邻接矩阵是对称的，有向图是不对称的。</li>
+<li>$D$: 度矩阵，是一个<strong>对角矩阵</strong>，其中对角元素<script type="math/tex">D_{ii}=\sum_j{A_{ij}}</script></li>
+<li>$X$: 特征矩阵，表示每个节点的特征</li>
+</ul>
+<p>我们的目的是学习出新的特征，即：</p>
+<div style="text-align: center;">
+$$H^{(k+1)}=f(H^{(k)}, A)=\sigma(AH^{(k)} W^{(k)})$$
+</div>
+
+<p>其中，<script type="math/tex">H^{(0)}=X</script>，<script type="math/tex">H^{(L)}=Z</script>，<script type="math/tex">W{(k)}</script>为<code>k</code>层的神经网络</p>
+<p>如何通过邻居节点得到其他节点的特征值？</p>
+<p><img src="/2022/08/25/gcn-try/r1.png" alt="image"></p>
+<hr>
+<p>那么，上述加法规则还有一些缺陷，下面给出缺陷和解决方法：</p>
+<ol>
+<li>在计算的时候考虑了<strong>除了自身外的</strong>所有节点<br> 给每个节点增加<strong>自连接</strong>，即：<script type="math/tex">\tilde{A}=A+\lambda I_N</script>，论文中取$\lambda =1$，也可以把它当作可训练的参数</li>
+<li><p>对于度较大的节点在计算几次后会越来越大</p>
+<p> 对邻接矩阵进行归一化使$A$每行和为1。</p>
+<ol>
+<li><p>按行，乘以度矩阵的逆矩阵：<script type="math/tex">D^{-1}\tilde{A}</script>，得到：</p>
+<div style="text-align: center;">
+$$H^{(k+1)}=f(H^{(k)}, A)=\sigma(D^{-1}\tilde{A}H^{(k)} W^{(k)})$$
+</div>
+
+<p><img src="/2022/08/25/gcn-try/r2.png" alt="image"></p>
+</li>
+<li><p>同样地，按列进行归一化</p>
+<div style="text-align: center;">
+$$H^{(k+1)}=f(H^{(k)}, A)=\sigma(D^{-\frac{1}{2}}\tilde{A}D^{-\frac{1}{2}}H^{(k)} W^{(k)})$$
+</div>
+
+<p><img src="/2022/08/25/gcn-try/r3.png" alt="image"></p>
+<p>注：这里为什么从$-1$改成了<script type="math/tex">-\frac{1}{2}</script>，是因为归一化了两次。</p>
+</li>
+</ol>
+<hr>
+<h1 id="GCN-in-papers"><a href="#GCN-in-papers" class="headerlink" title="GCN in papers"></a>GCN in papers</h1><h5 id="HiAGM"><a href="#HiAGM" class="headerlink" title="HiAGM"></a>HiAGM</h5><p> TODO</p>
+<h5 id="Representing-Schema-Structure-with-Graph-Neural-Networks-for-Text-to-SQL-Parsing"><a href="#Representing-Schema-Structure-with-Graph-Neural-Networks-for-Text-to-SQL-Parsing" class="headerlink" title="Representing Schema Structure with Graph Neural Networks for Text-to-SQL Parsing"></a>Representing Schema Structure with Graph Neural Networks for Text-to-SQL Parsing</h5><p> TODO</p>
+<h5 id="Global-Reasoning-over-Database-Structures-for-Text-to-SQL-Parsing"><a href="#Global-Reasoning-over-Database-Structures-for-Text-to-SQL-Parsing" class="headerlink" title="Global Reasoning over Database Structures for Text-to-SQL Parsing"></a>Global Reasoning over Database Structures for Text-to-SQL Parsing</h5><p> TODO</p>
+</li>
+</ol>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/GNN/">GNN</a>
+  </div>
+
+</div>
+
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev">
+ <a href="/2022/08/25/from-pretrained-try/" title="【随手记】一些关于from_pretrained的踩坑">
+  <span>
+  【随手记】一些关于from_pretrained的踩坑</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2022/08/25/doccano-try/" title="Doccano部署踩坑">
+ <span>Doccano部署踩坑
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+<div id="authorInfo">
+	
+		<div class="author-img"></div>		
+	
+	<div class="social-info">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:candnes@sina.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+
+	</div>
+</div>
+
+  
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/NLP/" title="NLP">NLP<sup>17</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Coreference-Resolution/" title="Coreference Resolution">Coreference Resolution<sup>8</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/NL2SQL/" title="NL2SQL">NL2SQL<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/踩坑/" title="踩坑">踩坑<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/学习/" title="学习">学习<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/GNN/" title="GNN">GNN<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/多模态/" title="多模态">多模态<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/爬虫/" title="爬虫">爬虫<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Algorithm/" title="Algorithm">Algorithm<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/python/" title="python">python<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/深度学习/" title="深度学习">深度学习<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer">
+		
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/hsihohuang/kiddochan" target="_blank" title="Kiddochan">Kiddochan</a> © 2023 
+		
+		<a href="/about" target="_blank" title="Yuanqing Zhu">Yuanqing Zhu</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</body>
+</html>
